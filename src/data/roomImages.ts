@@ -1,4 +1,4 @@
-import fensterplatzRegen from '../assets/fensterplatz-regen.jpg';
+import fensterplatzRegen from '../assets/Fensterplatz-am-Regen.png';
 import bibliothekNacht from '../assets/bibliothek-nacht.jpg';
 import wintergarten from '../assets/wintergarten.jpg';
 

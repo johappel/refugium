@@ -11,7 +11,7 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #020617 100%)',
       overlayEffect: 'rain'
     },
-    audio: { type: 'rain', volume: 0.6 },
+    audio: { type: 'rain', volume: 0.24 },
     singleSounds: [
       { name: 'Distant Thunder', frequency: 110, type: 'thunder', intervalMin: 20, intervalMax: 45 }
     ],
@@ -28,7 +28,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'bibliothek-nacht',
     name: 'Bibliothek bei Nacht',
     emotionalWord: 'Stille',
-    thought: 'Jahrhunderte ruhen in ledernen Rücken. Der Geruch von altem Papier und gedimmtem Licht. Hier hat jede Frage Zeit.',
+    thought: 'Draußen darf der Tag weiterfordern. Zwischen Holz, Papier und gedimmtem Licht fällt alles langsam von dir ab. Hier hat jede Frage Zeit, und nichts drängt auf Antwort.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 30% 40%, #291e1e 0%, #1a1010 60%, #0a0505 100%)',
@@ -51,8 +51,8 @@ export const INITIAL_ROOMS: Room[] = [
   {
     id: 'wintergarten',
     name: 'Wintergarten',
-    emotionalWord: 'Wachstum',
-    thought: 'Große Blätter atmen im Halbdunkel. Feuchte Erde, beschlagene Scheiben. Das Leben wächst leise, ohne zu fragen.',
+    emotionalWord: 'Behutsamkeit',
+    thought: 'Große Blätter atmen im Halbdunkel. Feuchte Erde und beschlagene Scheiben halten die Welt auf Abstand. Hier wächst nur, was Zeit, Wärme und Ruhe braucht.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 60% 50%, #11251d 0%, #08140e 65%, #020604 100%)',
@@ -75,8 +75,8 @@ export const INITIAL_ROOMS: Room[] = [
   {
     id: 'nachtzug',
     name: 'Nachtzug',
-    emotionalWord: 'Ferne',
-    thought: 'Ein gleichmäßiges Wiegen durch die Dunkelheit. Draußen huschen fremde Lichter vorbei. Du bist nirgendwo, und das ist gut so.',
+    emotionalWord: 'Loslassen',
+    thought: 'Das gleichmäßige Wiegen trägt dich durch die Dunkelheit, ohne etwas von dir zu verlangen. Draußen huschen fremde Lichter vorbei. Hier musst du nirgends ankommen.',
     visual: {
       type: 'css-ambient',
       background: 'linear-gradient(135deg, #1b1e2b 0%, #10121a 50%, #06070a 100%)',
@@ -98,8 +98,8 @@ export const INITIAL_ROOMS: Room[] = [
   {
     id: 'sternwarte',
     name: 'Sternwarte',
-    emotionalWord: 'Ewigkeit',
-    thought: 'Unzählige Lichtpunkte aus einer anderen Zeit. Die Kuppel steht offen. Dein Atem verliert sich in der Unendlichkeit.',
+    emotionalWord: 'Weite',
+    thought: 'Die Kuppel steht offen, und doch bleibst du gehalten. Unzählige Lichtpunkte lassen jeden inneren Lärm kleiner werden. Hier darf dein Atem weit und ruhig werden.',
     visual: {
       type: 'css-ambient',
       background: 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%)',
@@ -123,7 +123,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'ufer-nebel',
     name: 'Ufer im Nebel',
     emotionalWord: 'Weite',
-    thought: 'Wasser und Luft verschwimmen zu einem einzigen, weichen Grau. Das leise Plätschern kleiner Wellen am Uferstein.',
+    thought: 'Wasser und Luft verschwimmen zu einem einzigen weichen Grau. Alles Harte bleibt jenseits des Nebels zurück. Am Ufer darf dein Inneres leiser werden.',
     visual: {
       type: 'css-ambient',
       background: 'linear-gradient(180deg, #2d3748 0%, #1a202c 55%, #0f172a 100%)',
@@ -147,7 +147,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'stiller-innenhof',
     name: 'Stiller Innenhof',
     emotionalWord: 'Einkehr',
-    thought: 'Ein alter Brunnen flüstert vor sich hin. Moosbedeckte Steine halten die Wärme des vergangenen Tages. Niemand sucht dich hier.',
+    thought: 'Ein alter Brunnen flüstert vor sich hin. Moosbedeckte Steine halten die Wärme des vergangenen Tages. Niemand sucht dich hier, und genau das macht diesen Ort so sanft.',
     visual: {
       type: 'css-ambient',
       background: 'radial-gradient(circle at 50% 60%, #27272a 0%, #18181b 60%, #09090b 100%)',
@@ -196,7 +196,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'sandstrand',
     name: 'Strand bei Abenddämmerung',
     emotionalWord: 'Weite',
-    thought: 'Der Horizont verschwimmt zwischen Wasser und Himmel. Jede Welle löscht die Spuren des Tages aus.',
+    thought: 'Der Horizont verschwimmt zwischen Wasser und Himmel. Jede Welle nimmt ein wenig Anspannung mit sich fort. Hier darf der Tag enden, ohne noch etwas von dir zu wollen.',
     visual: {
       type: 'css-ambient',
       background: 'linear-gradient(180deg, #1e3542 0%, #2a4a5a 30%, #1c3a47 60%, #0f1f26 100%)',
@@ -220,7 +220,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'unterwasserstation',
     name: 'Tiefsee-Beobachtungsluke',
     emotionalWord: 'Gelassenheit',
-    thought: 'Das Bullauge rahmt eine andere Welt ein. Blasen steigen wie Gedanken auf, die man loslässt. Draußen: absolute Stille.',
+    thought: 'Das Bullauge hält die Tiefe draußen und macht sie sanft. Blasen steigen wie gelöste Gedanken auf. In diesem stillen Blau ist alles entschleunigt.',
     visual: {
       type: 'css-ambient',
       background: 'radial-gradient(circle at 50% 50%, #0d4a5c 0%, #052a35 40%, #021016 100%)',
@@ -252,7 +252,7 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
       id: 'japanisches-teehaueschen',
       name: 'Japanisches Teehäuschen',
       emotionalWord: 'Gleichmut',
-      thought: 'Wasserdampf steigt aus der gusseisernen Kanne. Der Wind streicht sanft über das Papier der Shoji-Schirme.',
+      thought: 'Wasserdampf steigt aus der gusseisernen Kanne. Der Wind bleibt jenseits der Shoji-Schirme. Im warmen Duft des Tees wird alles langsamer.',
       visual: {
         type: 'css-ambient',
         background: 'radial-gradient(circle at 40% 50%, #2e2318 0%, #1c150e 60%, #0a0705 100%)',
@@ -283,7 +283,7 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
       id: 'kaminzimmer',
       name: 'Verlassenes Kaminzimmer',
       emotionalWord: 'Wärme',
-      thought: 'Glut schimmert rot im dunklen Kamin. Die Dielen knarren leise. Ein Ort, der auf niemanden wartet und doch jeden empfängt.',
+      thought: 'Glut schimmert rot im dunklen Kamin. Draußen mag es kalt und fordernd sein, doch hier halten Wärme und Schatten still für dich aus. Ein Ort, der nichts verlangt und dennoch empfängt.',
       visual: {
         type: 'css-ambient',
         background: 'radial-gradient(circle at 50% 70%, #3b1d11 0%, #1f0d06 60%, #0a0301 100%)',

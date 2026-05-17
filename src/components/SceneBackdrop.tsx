@@ -11,6 +11,13 @@ interface SceneBackdropProps {
 export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = '' }) => {
   const imageUrl = ROOM_IMAGES[room.id];
   const hasImage = !!imageUrl;
+  const overlayMaskStyle =
+    room.id === 'fensterplatz-regen' && room.visual.overlayEffect === 'rain'
+      ? {
+          maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0.25) 58%, rgba(0,0,0,0) 66%)',
+          WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0.25) 58%, rgba(0,0,0,0) 66%)'
+        }
+      : undefined;
 
   const bgStyle = hasImage
     ? {
@@ -181,7 +188,9 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
 
       {/* Canvas-basierte Lebendigkeitseffekte */}
       {room.visual.overlayEffect && (
-        <CanvasOverlay effect={room.visual.overlayEffect} intensity={1} />
+        <div className="absolute inset-0 pointer-events-none" style={overlayMaskStyle}>
+          <CanvasOverlay effect={room.visual.overlayEffect} intensity={1} />
+        </div>
       )}
     </div>
   );

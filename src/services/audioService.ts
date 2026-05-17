@@ -241,15 +241,15 @@ function createWarmDrone(
 const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
   rain: {
     layers: [
-      // Deep rumble — distant clouds, the weight of weather
+      // Deep, distant weather bed — the storm stays outside
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'brown', 'lowpass', 300, 0.2, 0.22, { rate: 0.07, depth: 60, target: 'frequency' }),
-      // Mid-range rain patter — rain on roof, on leaves
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 220, 0.18, 0.12, { rate: 0.05, depth: 35, target: 'frequency' }),
+      // Soft rain body — muted by glass and distance
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'pink', 'lowpass', 1000, 0.4, 0.14, { rate: 0.1, depth: 200, target: 'frequency' }),
-      // High raindrops — individual drops on the window pane
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 650, 0.35, 0.07, { rate: 0.08, depth: 90, target: 'frequency' }),
+      // A faint window texture so the rain does not feel fully indoors
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'violet', 'bandpass', 3500, 1.5, 0.05, { rate: 0.12, depth: 400, target: 'frequency' }),
+        createNoiseSource(ctx, m, 'violet', 'bandpass', 2200, 1.1, 0.012, { rate: 0.1, depth: 180, target: 'frequency' }),
     ],
   },
 
