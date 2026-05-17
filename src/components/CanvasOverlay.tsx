@@ -243,8 +243,10 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       } else if (effect === 'prayer-lights') {
         const prayerLightCount = Math.max(5, Math.round(7 * intensity));
         for (let i = 0; i < prayerLightCount; i++) {
-          const trailProgress = prayerLightCount === 1 ? 0 : i / (prayerLightCount - 1);
-          const seededY = height * (0.94 - trailProgress * 1.08 + (Math.random() - 0.5) * 0.03);
+          const seededY =
+            i === 0
+              ? height * (0.26 + Math.random() * 0.22)
+              : height * (0.82 + Math.random() * 0.14);
           const seededX = 0.16 + Math.random() * 0.68;
           const convergeX = (0.5 - seededX) * (0.36 + Math.random() * 0.18);
           particles.push({
@@ -1354,11 +1356,11 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           }
           case 'prayer-light': {
             if (p.y < -height * 0.22 || p.life > p.maxLife || p.x < -30 || p.x > width + 30) {
-              const respawnInUpperShaft = Math.random() < 0.35;
+              const respawnInUpperShaft = Math.random() < 0.08;
               const respawnX = 0.16 + Math.random() * 0.68;
               p.x = width * respawnX;
               p.y = respawnInUpperShaft
-                ? height * (0.18 + Math.random() * 0.38)
+                ? height * (0.22 + Math.random() * 0.3)
                 : height * (0.82 + Math.random() * 0.12);
               p.vx = (0.5 - respawnX) * (0.36 + Math.random() * 0.18);
               p.vy = -0.18 - Math.random() * 0.16;
