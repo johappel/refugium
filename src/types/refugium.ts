@@ -26,7 +26,7 @@ export interface AmbientAudioConfig {
 export interface SingleSoundConfig {
   name: string;
   frequency: number;
-  type: 'sine' | 'triangle' | 'bell' | 'chime' | 'thunder';
+  type: 'sine' | 'triangle' | 'bell' | 'chime' | 'thunder' | 'drip';
   intervalMin: number; // in Sekunden
   intervalMax: number;
 }

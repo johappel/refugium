@@ -17,6 +17,11 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
           maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0.25) 58%, rgba(0,0,0,0) 66%)',
           WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0.25) 58%, rgba(0,0,0,0) 66%)'
         }
+      : room.id === 'blaue-lagune' && room.visual.overlayEffect === 'water'
+        ? {
+            maskImage: 'radial-gradient(ellipse at 60% 70%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 14%, rgba(0,0,0,0.8) 28%, rgba(0,0,0,0.34) 42%, rgba(0,0,0,0.08) 52%, rgba(0,0,0,0) 60%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 60% 70%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 14%, rgba(0,0,0,0.8) 28%, rgba(0,0,0,0.34) 42%, rgba(0,0,0,0.08) 52%, rgba(0,0,0,0) 60%)'
+          }
       : undefined;
   const overlayWrapperStyle: React.CSSProperties =
     room.id === 'nachtzug' && room.visual.overlayEffect === 'train-lights'
@@ -195,17 +200,11 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
       case 'blaue-lagune':
         return (
           <>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_14%,rgba(102,234,255,0.18),transparent_22%),linear-gradient(180deg,#0e252d_0%,#0a1e25_42%,#051116_100%)]" />
-            <div className="absolute inset-x-[10%] top-[8%] h-[40%] rounded-b-[48%] bg-[radial-gradient(ellipse_at_50%_18%,rgba(80,220,255,0.4),rgba(20,90,110,0.16)_40%,transparent_72%)] blur-[2px]" />
-            <div className="absolute inset-x-0 bottom-0 h-[34%] bg-[linear-gradient(180deg,rgba(12,54,68,0.2)_0%,rgba(10,54,68,0.78)_60%,rgba(5,24,30,0.95)_100%)]" />
-            <div className="absolute inset-x-[22%] bottom-[22%] h-[12%] bg-[radial-gradient(ellipse_at_50%_40%,rgba(120,240,255,0.22),transparent_65%)] blur-xl" />
-            <div className="absolute inset-x-0 bottom-[24%] h-px bg-gradient-to-r from-transparent via-cyan-100/20 to-transparent" />
-            <svg className="absolute left-0 top-0 h-full w-[24%] opacity-65" viewBox="0 0 240 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <path d="M0 0C40 90 82 146 96 224C112 312 80 392 96 494C112 598 180 688 208 800H0V0Z" fill="#07151a" />
-            </svg>
-            <svg className="absolute right-0 top-0 h-full w-[24%] opacity-65" viewBox="0 0 240 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <path d="M240 0C200 90 158 146 144 224C128 312 160 392 144 494C128 598 60 688 32 800H240V0Z" fill="#07151a" />
-            </svg>
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,13,18,0.16)_0%,rgba(5,14,18,0.08)_35%,rgba(3,8,12,0.28)_100%)]" />
+            <div className="absolute left-[7%] top-[18%] h-[28%] w-[16%] rounded-full bg-[radial-gradient(circle,rgba(255,176,92,0.16),transparent_72%)] blur-3xl" />
+            <div className="absolute right-[7%] top-[18%] h-[26%] w-[16%] rounded-full bg-[radial-gradient(circle,rgba(255,176,92,0.14),transparent_72%)] blur-3xl" />
+            <div className="absolute inset-x-[24%] bottom-[10%] h-[18%] bg-[radial-gradient(ellipse_at_50%_40%,rgba(120,240,255,0.18),transparent_70%)] blur-2xl" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.2)_0%,transparent_18%,transparent_82%,rgba(0,0,0,0.18)_100%)]" />
           </>
         );
 

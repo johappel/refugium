@@ -84,6 +84,7 @@ interface RoomSoundProfile {
 }
 
 const AMBIENT_GAIN_COMPENSATION = 2.4;
+const DRIP_SAMPLE_URL = '/sound-effects/wassertroepfchen.mp3';
 
 function normalizeAmbientGain(level: number): number {
   return Math.min(1, Math.max(0.003, level * AMBIENT_GAIN_COMPENSATION));
@@ -576,6 +577,8 @@ class AudioService {
   private transitionTimer: number | null = null;
   private isPlaying = false;
   private singleSoundTimers: number[] = [];
+  private soundEffectBuffers = new Map<string, AudioBuffer>();
+  private soundEffectPromises = new Map<string, Promise<AudioBuffer | null>>();
 
   // -- Lifecycle --
 
@@ -792,6 +795,11 @@ class AudioService {
   private playSingleTone(conf: SingleSoundConfig): void {
     if (!this.ctx || !this.masterGain || !this.isPlaying) return;
 
+    if (conf.type === 'drip') {
+      void this.playDripSample(conf);
+      return;
+    }
+
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -848,6 +856,119 @@ class AudioService {
   private clearSingleSoundTimers(): void {
     this.singleSoundTimers.forEach((t) => clearTimeout(t));
     this.singleSoundTimers = [];
+  }
+
+  private async loadSoundEffectBuffer(url: string): Promise<AudioBuffer | null> {
+    if (!this.ctx) return null;
+
+    const cached = this.soundEffectBuffers.get(url);
+    if (cached) return cached;
+
+    const existingPromise = this.soundEffectPromises.get(url);
+    if (existingPromise) return existingPromise;
+
+    const loadingPromise = fetch(url)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Konnte Soundeffekt nicht laden: ${url}`);
+        }
+        const fileData = await response.arrayBuffer();
+        return this.ctx!.decodeAudioData(fileData.slice(0));
+      })
+      .then((buffer) => {
+        this.soundEffectBuffers.set(url, buffer);
+        this.soundEffectPromises.delete(url);
+        return buffer;
+      })
+      .catch((error) => {
+        console.warn('Fehler beim Laden des Soundeffekts', error);
+        this.soundEffectPromises.delete(url);
+        return null;
+      });
+
+    this.soundEffectPromises.set(url, loadingPromise);
+    return loadingPromise;
+  }
+
+  private async playDripSample(conf: SingleSoundConfig): Promise<void> {
+    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+
+    const buffer = await this.loadSoundEffectBuffer(DRIP_SAMPLE_URL);
+    if (!buffer || !this.ctx || !this.masterGain || !this.isPlaying) {
+      this.playSyntheticDrip(conf);
+      return;
+    }
+
+    const now = this.ctx.currentTime;
+    const source = this.ctx.createBufferSource();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    source.buffer = buffer;
+    source.playbackRate.setValueAtTime(0.92 + Math.random() * 0.16, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2600, now);
+    filter.Q.setValueAtTime(0.4, now);
+
+    gain.gain.setValueAtTime(0.075, now);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    source.start(now);
+    source.onended = () => {
+      try {
+        source.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      } catch {
+        /* already disconnected */
+      }
+    };
+  }
+
+  private playSyntheticDrip(conf: SingleSoundConfig): void {
+    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+    const gain2 = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc2.type = 'sine';
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(conf.frequency * 4.5, now);
+    filter.Q.setValueAtTime(0.8, now);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.055, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
+
+    gain2.gain.setValueAtTime(0.001, now);
+    gain2.gain.linearRampToValueAtTime(0.018, now + 0.015);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+
+    osc.frequency.setValueAtTime(conf.frequency * 1.4, now);
+    osc.frequency.exponentialRampToValueAtTime(conf.frequency * 0.76, now + 0.18);
+    osc2.frequency.setValueAtTime(conf.frequency * 2.2, now);
+    osc2.frequency.exponentialRampToValueAtTime(conf.frequency * 1.2, now + 0.1);
+
+    osc.connect(filter);
+    osc2.connect(gain2);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+    gain2.connect(this.masterGain);
+
+    osc.start(now);
+    osc2.start(now + 0.01);
+    osc.stop(now + 1.3);
+    osc2.stop(now + 0.75);
   }
 }
 
