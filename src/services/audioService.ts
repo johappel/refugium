@@ -77,6 +77,7 @@ type SourceNode = AudioBufferSourceNode | OscillatorNode;
 interface SoundLayer {
   source: SourceNode;
   nodes: AudioNode[];
+  kind?: 'ambient-sample';
 }
 
 interface RoomSoundProfile {
@@ -457,15 +458,15 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
     layers: [
       // Main cove body that slowly swells and settles
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'brown', 'lowpass', 150, 0.28, 0.03, { rate: 0.055, depth: 0.016, target: 'gain' }),
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 170, 0.32, 0.075, { rate: 0.055, depth: 0.03, target: 'gain' }),
       // Softer outer-lip movement with its own slower swell
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'pink', 'lowpass', 380, 0.5, 0.013, { rate: 0.082, depth: 0.007, target: 'gain' }),
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 420, 0.55, 0.028, { rate: 0.082, depth: 0.012, target: 'gain' }),
       // A faint moving edge of light on the water, kept very low to avoid hiss
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'blue', 'lowpass', 760, 0.2, 0.0018, { rate: 0.03, depth: 24, target: 'frequency' }),
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 860, 0.24, 0.0045, { rate: 0.03, depth: 38, target: 'frequency' }),
       // A gentle resonant cave bed underneath the water
-      (ctx, m) => createWarmDrone(ctx, m, 124, 0.01, 0.012, 2.2),
+      (ctx, m) => createWarmDrone(ctx, m, 124, 0.02, 0.014, 2.4),
     ],
   },
 
@@ -536,11 +537,7 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
   },
 
   silence: {
-    layers: [
-      // Barely-there room tone — just enough to break absolute silence
-      (ctx, m) =>
-        createNoiseSource(ctx, m, 'brown', 'lowpass', 80, 0.08, 0.02),
-    ],
+    layers: [],
   },
 
   cathedral: {
@@ -567,6 +564,8 @@ interface ActiveRoom {
   layers: SoundLayer[];
   gainNode: GainNode;
   config: AmbientAudioConfig;
+  destroyed?: boolean;
+  pendingTimers?: number[];
 }
 
 class AudioService {
@@ -645,6 +644,7 @@ class AudioService {
     const newRoom = this.createRoom(config, 0.001, config.volume, 4.5);
     this.activeRoom = newRoom;
     this.isPlaying = true;
+    this.startAmbientSampleLayer(newRoom);
 
     if (singleConfigs && singleConfigs.length > 0) {
       this.scheduleSingleSounds(singleConfigs);
@@ -698,10 +698,11 @@ class AudioService {
       Math.max(targetRoom.gainNode.gain.value, 0.001),
       now
     );
-    targetRoom.gainNode.gain.linearRampToValueAtTime(config.volume, now + 3.5);
+    targetRoom.gainNode.gain.linearRampToValueAtTime(normalizeAmbientGain(config.volume), now + 3.5);
 
     this.activeRoom = targetRoom;
     this.isPlaying = true;
+    this.startAmbientSampleLayer(targetRoom);
 
     if (singleConfigs && singleConfigs.length > 0) {
       this.scheduleSingleSounds(singleConfigs);
@@ -730,16 +731,110 @@ class AudioService {
     roomGain.connect(this.masterGain);
 
     const layers = profile.layers.map((layerFn) => layerFn(this.ctx!, roomGain));
+    const room: ActiveRoom = { layers, gainNode: roomGain, config, destroyed: false, pendingTimers: [] };
 
     if (targetVol !== null && fadeSeconds > 0) {
       roomGain.gain.linearRampToValueAtTime(normalizeAmbientGain(targetVol), this.ctx.currentTime + fadeSeconds);
     }
 
-    return { layers, gainNode: roomGain, config };
+    return room;
+  }
+
+  private startAmbientSampleLayer(room: ActiveRoom): void {
+    if (!room.config.sampleLayer) return;
+    void this.attachAmbientSampleLayer(room, room.config.sampleLayer);
+  }
+
+  private async attachAmbientSampleLayer(
+    room: ActiveRoom,
+    sample: NonNullable<AmbientAudioConfig['sampleLayer']>
+  ): Promise<void> {
+    if (!this.ctx || room.destroyed) return;
+
+    const buffer = await this.loadSoundEffectBuffer(sample.url);
+    if (!buffer || !this.ctx || room.destroyed) return;
+
+    const startDelay = sample.startDelay ?? 0;
+    const startOffset = Math.max(0, sample.startOffset ?? 0);
+    const fadeInSeconds = sample.fadeInSeconds ?? 4;
+    const targetGain = Math.max(0.0001, sample.volume);
+    const targetRoomGain = normalizeAmbientGain(room.config.volume * (sample.roomGainMultiplier ?? 1));
+    const startSample = () => {
+      if (!this.ctx || room.destroyed) return;
+
+      const now = this.ctx.currentTime;
+      const source = this.ctx.createBufferSource();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      source.buffer = buffer;
+      source.loop = sample.loop ?? true;
+      if (source.loop && startOffset > 0) {
+        source.loopStart = Math.min(startOffset, Math.max(0, buffer.duration - 0.05));
+      }
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(sample.lowpass ?? 600, now);
+      filter.Q.setValueAtTime(0.3, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(targetGain, now + fadeInSeconds);
+
+      if ((sample.roomGainMultiplier ?? 1) !== 1) {
+        room.gainNode.gain.cancelScheduledValues(now);
+        room.gainNode.gain.setValueAtTime(Math.max(room.gainNode.gain.value, 0.001), now);
+        room.gainNode.gain.linearRampToValueAtTime(targetRoomGain, now + Math.min(1.2, fadeInSeconds));
+      }
+
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(room.gainNode);
+      source.start(now, Math.min(startOffset, Math.max(0, buffer.duration - 0.05)));
+
+      room.layers.push({ source, nodes: [source, filter, gain], kind: 'ambient-sample' });
+    };
+
+    if (startDelay > 0) {
+      const timerId = window.setTimeout(() => {
+        room.pendingTimers = room.pendingTimers?.filter((id) => id !== timerId) ?? [];
+        startSample();
+      }, startDelay * 1000);
+      room.pendingTimers?.push(timerId);
+      return;
+    }
+
+    startSample();
+  }
+
+  private fadeOutAmbientSamples(room: ActiveRoom, duration = 0.8): void {
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    room.layers.forEach((layer) => {
+      if (layer.kind !== 'ambient-sample') return;
+
+      const gainNode = layer.nodes[layer.nodes.length - 1] as GainNode | undefined;
+      if (gainNode?.gain) {
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.setValueAtTime(Math.max(gainNode.gain.value, 0.0001), now);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      }
+
+      try {
+        layer.source.stop(now + duration + 0.05);
+      } catch {
+        /* already stopped */
+      }
+    });
   }
 
   private fadeOutRoom(room: ActiveRoom, duration: number): void {
     if (!this.ctx) return;
+
+    room.pendingTimers?.forEach((timerId) => clearTimeout(timerId));
+    room.pendingTimers = [];
+
+    this.fadeOutAmbientSamples(room, Math.min(1.2, duration * 0.2));
     const now = this.ctx.currentTime;
     room.gainNode.gain.cancelScheduledValues(now);
     room.gainNode.gain.setValueAtTime(
@@ -750,6 +845,9 @@ class AudioService {
   }
 
   private destroyRoom(room: ActiveRoom): void {
+    room.destroyed = true;
+    room.pendingTimers?.forEach((timerId) => clearTimeout(timerId));
+    room.pendingTimers = [];
     room.layers.forEach((layer) => {
       try {
         layer.source.stop();
@@ -789,8 +887,9 @@ class AudioService {
         this.singleSoundTimers.push(timerId);
       };
 
-      const initialDelay =
-        conf.type === 'drip'
+      const initialDelay = conf.startImmediately
+        ? 80
+        : conf.type === 'drip'
           ? 1200 + Math.random() * 2200
           : (Math.random() * (conf.intervalMax - conf.intervalMin) + conf.intervalMin) * 1000;
 
@@ -807,6 +906,11 @@ class AudioService {
 
     if (conf.type === 'drip') {
       void this.playDripSample(conf);
+      return;
+    }
+
+    if (conf.type === 'sample') {
+      void this.playConfiguredSample(conf);
       return;
     }
 
@@ -926,6 +1030,55 @@ class AudioService {
     gain.gain.setValueAtTime(0.0001, now);
     gain.gain.linearRampToValueAtTime(0.05, now + 0.04);
     gain.gain.exponentialRampToValueAtTime(0.018, now + Math.max(0.45, clipDuration * 0.55));
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + clipDuration);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    source.start(now, startOffset, clipDuration);
+    source.stop(now + clipDuration + 0.08);
+    source.onended = () => {
+      try {
+        source.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      } catch {
+        /* already disconnected */
+      }
+    };
+  }
+
+  private async playConfiguredSample(conf: SingleSoundConfig): Promise<void> {
+    if (!this.ctx || !this.masterGain || !this.isPlaying || !conf.sample) return;
+
+    const { sample } = conf;
+    const buffer = await this.loadSoundEffectBuffer(sample.url);
+    if (!buffer || !this.ctx || !this.masterGain || !this.isPlaying) return;
+
+    const now = this.ctx.currentTime;
+    const source = this.ctx.createBufferSource();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+    const playbackRateMin = sample.playbackRateMin ?? 0.985;
+    const playbackRateMax = sample.playbackRateMax ?? 1.015;
+    const startOffset = Math.min(sample.startOffset ?? 0, Math.max(0, buffer.duration - 0.12));
+    const maxDuration = Math.max(0.12, buffer.duration - startOffset);
+    const clipDuration = Math.min(sample.clipDuration ?? maxDuration, maxDuration);
+
+    source.buffer = buffer;
+    source.playbackRate.setValueAtTime(
+      playbackRateMin + Math.random() * Math.max(0.0001, playbackRateMax - playbackRateMin),
+      now
+    );
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(sample.lowpass ?? 3200, now);
+    filter.Q.setValueAtTime(0.25, now);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(sample.volume, now + 0.08);
+    gain.gain.setValueAtTime(sample.volume, now + Math.max(0.2, clipDuration - 0.35));
     gain.gain.exponentialRampToValueAtTime(0.0001, now + clipDuration);
 
     source.connect(filter);

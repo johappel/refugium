@@ -5,8 +5,11 @@ type EffectType =
   | 'dust'
   | 'stars'
   | 'fog'
+  | 'mist'
   | 'leaves'
   | 'water'
+  | 'stone-drips'
+  | 'prayer-lights'
   | 'fire'
   | 'train-lights'
   | 'rays'
@@ -166,6 +169,24 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
             speed: 0.22 + Math.random() * 0.22
           });
         }
+      } else if (effect === 'mist') {
+        for (let i = 0; i < 12; i++) {
+          const maxLife = 100 + Math.random() * 160;
+          particles.push({
+            kind: 'mist-wisp',
+            x: width * (0.12 + (i / 9) * 0.76) + (Math.random() - 0.5) * 80,
+            y: height * (0.42 + Math.random() * 0.18),
+            vx: -0.055 + Math.random() * 0.11,
+            vy: -0.075 - Math.random() * 0.095,
+            size: 300 + Math.random() * 340,
+            opacity: 0.1 + Math.random() * 0.07,
+            life: Math.random() * maxLife,
+            maxLife,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.28 + Math.random() * 0.24,
+            amplitude: 58 + Math.random() * 62
+          });
+        }
       } else if (effect === 'leaves') {
         for (let i = 0; i < 30 * intensity; i++) {
           particles.push({
@@ -198,6 +219,49 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
             maxLife: 180 + Math.random() * 120,
             phase: Math.random() * Math.PI * 2,
             speed: 0.8 + Math.random() * 0.6
+          });
+        }
+      } else if (effect === 'stone-drips') {
+        for (let i = 0; i < 18 * intensity; i++) {
+          const impactY = height * (0.5 + Math.random() * 0.36);
+          particles.push({
+            kind: 'stone-drop',
+            x: width * (0.14 + Math.random() * 0.72),
+            y: height * (0.04 + Math.random() * 0.22),
+            vx: -0.08 + Math.random() * 0.16,
+            vy: 3.6 + Math.random() * 2.4,
+            size: 8 + Math.random() * 10,
+            opacity: 0.18 + Math.random() * 0.18,
+            life: 0,
+            maxLife: 1,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.7 + Math.random() * 0.6,
+            baseY: impactY,
+            amplitude: 8 + Math.random() * 12
+          });
+        }
+      } else if (effect === 'prayer-lights') {
+        const prayerLightCount = Math.max(5, Math.round(7 * intensity));
+        for (let i = 0; i < prayerLightCount; i++) {
+          const trailProgress = prayerLightCount === 1 ? 0 : i / (prayerLightCount - 1);
+          const seededY = height * (0.94 - trailProgress * 1.08 + (Math.random() - 0.5) * 0.03);
+          const seededX = 0.16 + Math.random() * 0.68;
+          const convergeX = (0.5 - seededX) * (0.36 + Math.random() * 0.18);
+          particles.push({
+            kind: 'prayer-light',
+            x: width * seededX,
+            y: seededY,
+            vx: convergeX,
+            vy: -0.18 - Math.random() * 0.16,
+            size: 1.8 + Math.random() * 2.8,
+            opacity: 0.24 + Math.random() * 0.22,
+            life: 0,
+            maxLife: 340 + Math.random() * 220,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.24 + Math.random() * 0.24,
+            amplitude: 4 + Math.random() * 10,
+            glowIntensity: 0.88 + Math.random() * 0.36,
+            hue: 42 + Math.random() * 10
           });
         }
       } else if (effect === 'fire') {
@@ -233,48 +297,22 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           });
         }
       } else if (effect === 'rays') {
-        // Definierte, stabile Lichtsäulen für volumetrisches Atmen
-        const columnCount = 6;
-        rayColumnsRef.current = Array.from({ length: columnCount }).map((_, i) => ({
-          x: (i + 0.5) * (width / columnCount) + (Math.random() - 0.5) * 80,
-          width: 80 + Math.random() * 100,
-          angle: -16 + Math.random() * 8,
-          phase: i * 0.7 + Math.random() * 0.6,
-          speed: 0.0004 + Math.random() * 0.0004,
-          intensity: 0.10 + Math.random() * 0.06
-        }));
+        rayColumnsRef.current = [];
 
-        // Boden-Caustics: 8 schillernde Lichtbrechungs-Kreise
-        for (let i = 0; i < 8; i++) {
-          particles.push({
-            kind: 'caustic',
-            x: (i + 0.5) * (width / 8) + (Math.random() - 0.5) * 60,
-            y: height * (0.82 + Math.random() * 0.12),
-            vx: 0,
-            vy: 0,
-            size: 80 + Math.random() * 100,
-            opacity: 0.08 + Math.random() * 0.06,
-            life: 0,
-            maxLife: 1,
-            phase: Math.random() * Math.PI * 2,
-            speed: 0.4 + Math.random() * 0.5
-          });
-        }
-
-        // Tanzende Waldpollen: 35 goldene Pollen
+        // Nur aufsteigende Funken vom Waldboden
         for (let i = 0; i < 35 * intensity; i++) {
           particles.push({
             kind: 'pollen',
             x: Math.random() * width,
             y: height + Math.random() * height * 0.3,
-            vx: (Math.random() - 0.5) * 0.25,
-            vy: -0.12 - Math.random() * 0.22,
-            size: 1.4 + Math.random() * 2.2,
-            opacity: 0.35 + Math.random() * 0.35,
+            vx: (Math.random() - 0.5) * 0.16,
+            vy: -0.18 - Math.random() * 0.28,
+            size: 1.2 + Math.random() * 1.8,
+            opacity: 0.22 + Math.random() * 0.24,
             life: 0,
             maxLife: 1,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.4 + Math.random() * 0.6,
+            speed: 0.35 + Math.random() * 0.45,
             glowIntensity: 0
           });
         }
@@ -282,51 +320,27 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
         // Mehrschichtige Wellen
         const waveCount = 6;
         for (let i = 0; i < waveCount; i++) {
+          const isRearWave = i < 3;
+          const baseX = isRearWave
+            ? width * (0.28 + i * 0.22)
+            : width * (0.34 + (i - 3) * 0.18);
           particles.push({
             kind: 'wave',
-            x: width * 0.5,
-            y: height * 0.78 + i * 14,
+            x: baseX,
+            y: isRearWave
+              ? height * (0.56 + i * 0.065)
+              : height * (0.68 + (i - 3) * 0.024),
             vx: 0,
             vy: 0,
-            size: width * (1.1 + i * 0.08),
-            opacity: 0.05 + Math.random() * 0.05,
+            size: width * (isRearWave ? 0.82 + i * 0.05 : 1.04 + (i - 3) * 0.09),
+            opacity: isRearWave
+              ? 0.07 + Math.random() * 0.06
+              : 0.12 + Math.random() * 0.1,
             life: Math.random() * 400,
             maxLife: 400,
             phase: i * (Math.PI / 1.8),
-            speed: 0.35 + Math.random() * 0.15,
+            speed: 0.48 + Math.random() * 0.22,
             index: i
-          });
-        }
-
-        // Markanter weißer Gischt-Spülsaum
-        particles.push({
-          kind: 'foamcrest',
-          x: width * 0.5,
-          y: height * 0.84,
-          vx: 0,
-          vy: 0,
-          size: width,
-          opacity: 0.7,
-          life: 0,
-          maxLife: 1,
-          phase: 0,
-          speed: 0.35
-        });
-
-        // 12 horizontal fließende Schaumlinien
-        for (let i = 0; i < 12; i++) {
-          particles.push({
-            kind: 'foamline',
-            x: Math.random() * width,
-            y: height * (0.84 + Math.random() * 0.13),
-            vx: -0.4 - Math.random() * 0.6,
-            vy: 0,
-            size: 60 + Math.random() * 200,
-            opacity: 0.25 + Math.random() * 0.35,
-            life: Math.random() * 200,
-            maxLife: 220,
-            phase: Math.random() * Math.PI * 2,
-            speed: 0.5 + Math.random() * 0.5
           });
         }
 
@@ -524,6 +538,54 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       ctx.restore();
     };
 
+    const drawMistWisp = (p: Particle, time: number) => {
+      const lateral = Math.sin(time * 0.00035 * p.speed + p.phase) * (p.amplitude ?? 28);
+      const verticalPulse = Math.sin(time * 0.00042 * p.speed + p.phase * 1.2) * 6;
+      const cx = p.x + lateral;
+      const cy = p.y + verticalPulse;
+      const lifeRatio = Math.min(1, p.life / p.maxLife);
+      const lifeEnvelope = Math.sin(lifeRatio * Math.PI);
+      const breath = 0.84 + Math.sin(time * 0.0007 * p.speed + p.phase) * 0.22;
+      const op = p.opacity * lifeEnvelope * breath;
+
+      if (op <= 0.005) return;
+
+      ctx.save();
+      ctx.filter = 'blur(24px)';
+
+      const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, p.size * 0.68);
+      core.addColorStop(0, `rgba(242, 232, 228, ${op * 1.02})`);
+      core.addColorStop(0.42, `rgba(232, 198, 190, ${op * 0.66})`);
+      core.addColorStop(1, 'rgba(204, 188, 192, 0)');
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, p.size * 0.72, p.size * 0.17, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const veil = ctx.createRadialGradient(cx, cy - p.size * 0.1, 0, cx, cy - p.size * 0.1, p.size);
+      veil.addColorStop(0, `rgba(248, 236, 232, ${op * 0.5})`);
+      veil.addColorStop(0.56, `rgba(236, 208, 204, ${op * 0.28})`);
+      veil.addColorStop(1, 'rgba(208, 194, 196, 0)');
+      ctx.fillStyle = veil;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - p.size * 0.06, p.size * 1.08, p.size * 0.26, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let band = 0; band < 3; band++) {
+        const bandShift = (band - 1) * p.size * 0.12;
+        const bandWave = Math.sin(time * 0.00065 * (p.speed + band * 0.08) + p.phase + band * 0.9) * (8 + band * 4);
+        const ribbon = ctx.createRadialGradient(cx + bandWave, cy + bandShift, 0, cx + bandWave, cy + bandShift, p.size * 0.9);
+        ribbon.addColorStop(0, `rgba(242, 224, 218, ${op * (0.3 - band * 0.05)})`);
+        ribbon.addColorStop(1, 'rgba(220, 206, 208, 0)');
+        ctx.fillStyle = ribbon;
+        ctx.beginPath();
+        ctx.ellipse(cx + bandWave, cy + bandShift, p.size * (0.78 + band * 0.08), p.size * 0.12, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    };
+
     const drawLeaf = (p: Particle, time: number) => {
       const sway = Math.sin(time * 0.003 * p.speed + p.phase) * 0.8;
       const px = p.x + sway * 2;
@@ -559,6 +621,85 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       ctx.beginPath();
       ctx.ellipse(p.x, p.y, r * 1.35, r * 0.4, 0, 0, Math.PI * 2);
       ctx.stroke();
+    };
+
+    const drawStoneDrop = (p: Particle, time: number) => {
+      const sway = Math.sin(time * 0.003 * p.speed + p.phase) * 0.8;
+      const x = p.x + sway;
+      const length = p.size * 0.9;
+
+      ctx.strokeStyle = `rgba(198, 214, 224, ${p.opacity})`;
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(x, p.y - length);
+      ctx.lineTo(x, p.y + length * 0.2);
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(224, 234, 240, ${p.opacity * 0.8})`;
+      ctx.beginPath();
+      ctx.arc(x, p.y + length * 0.2, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const drawStoneRing = (p: Particle) => {
+      const t = p.life / p.maxLife;
+      const radius = p.size + t * (p.amplitude ?? 10);
+      const op = p.opacity * (1 - t);
+      if (op <= 0.01) return;
+
+      ctx.strokeStyle = `rgba(176, 198, 210, ${op})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, radius * 1.15, radius * 0.42, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(208, 220, 228, ${op * 0.35})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.2 + (1 - t) * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const drawPrayerLight = (p: Particle, time: number) => {
+      const sway = Math.sin(time * 0.0011 * p.speed + p.phase) * (p.amplitude ?? 8) * 0.05;
+      const flicker = 0.84 + Math.sin(time * 0.0028 * p.speed + p.phase) * 0.16;
+      const liftGlow = 0.82 + (1 - p.y / Math.max(1, height)) * 0.54;
+      const x = p.x + sway;
+      const y = p.y;
+      const op = p.opacity * flicker;
+      const outerRadius = p.size * (5.4 + (p.glowIntensity ?? 0.9) * 2.1) * liftGlow;
+      const coreRadius = p.size * (1.02 + flicker * 0.34);
+      const hue = p.hue ?? 42;
+      const tailLength = outerRadius * (2.6 + liftGlow * 0.9);
+
+      const tail = ctx.createLinearGradient(x, y + tailLength, x, y - outerRadius * 0.45);
+      tail.addColorStop(0, `hsla(${hue - 4}, 90%, 62%, 0)`);
+      tail.addColorStop(0.38, `hsla(${hue - 2}, 94%, 72%, ${op * 0.14})`);
+      tail.addColorStop(0.82, `hsla(${hue + 2}, 98%, 86%, ${op * 0.34})`);
+      tail.addColorStop(1, `hsla(${hue + 6}, 100%, 92%, 0)`);
+      ctx.strokeStyle = tail;
+      ctx.lineWidth = Math.max(1.1, p.size * 0.5);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(x, y + tailLength);
+      ctx.lineTo(x, y - outerRadius * 0.2);
+      ctx.stroke();
+
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, outerRadius);
+      halo.addColorStop(0, `hsla(${hue}, 98%, 88%, ${op * 0.78})`);
+      halo.addColorStop(0.34, `hsla(${hue - 4}, 94%, 74%, ${op * 0.32})`);
+      halo.addColorStop(1, `hsla(${hue - 8}, 85%, 52%, 0)`);
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      const core = ctx.createRadialGradient(x, y, 0, x, y, coreRadius);
+      core.addColorStop(0, `hsla(${hue + 8}, 100%, 96%, ${Math.min(1, op * 1.45)})`);
+      core.addColorStop(1, `hsla(${hue}, 96%, 72%, 0)`);
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
+      ctx.fill();
     };
 
     const drawEmber = (p: Particle, time: number) => {
@@ -638,59 +779,27 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       ctx.fill();
     };
 
-    const rayIntensityAt = (px: number, py: number, time: number): number => {
-      let maxI = 0;
-      for (const col of rayColumnsRef.current) {
-        const sway = Math.sin(time * 0.0004 + col.phase) * 14;
-        const cx = col.x + sway;
-        const angleRad = (col.angle * Math.PI) / 180;
-        // Inverse Rotation
-        const dx = px - cx;
-        const dy = py;
-        const localX = dx * Math.cos(-angleRad) - dy * Math.sin(-angleRad);
-        const halfWidth = col.width * (1 + (py / height) * 0.4);
-        const dist = Math.abs(localX);
-        if (dist < halfWidth) {
-          const breath = 0.6 + Math.sin(time * col.speed * 2 * Math.PI + col.phase) * 0.4;
-          const t = 1 - dist / halfWidth;
-          const I = t * breath;
-          if (I > maxI) maxI = I;
-        }
-      }
-      return maxI;
-    };
-
     const drawPollen = (p: Particle, time: number) => {
       // Sanftes seitliches Schweben
-      const sway = Math.sin(time * 0.001 * p.speed + p.phase) * 0.3;
+      const sway = Math.sin(time * 0.001 * p.speed + p.phase) * 0.24;
       p.x += sway * 0.4;
 
-      // Glow-Intensität abhängig von Lichtsäulen-Nähe
-      const inRay = rayIntensityAt(p.x, p.y, time);
-      const current = p.glowIntensity ?? 0;
-      p.glowIntensity = current + (inRay - current) * 0.08;
-      const glow = p.glowIntensity;
+      const pulse = 0.65 + Math.sin(time * 0.004 * p.speed + p.phase) * 0.35;
+      const baseOp = p.opacity * pulse;
+      const r = p.size * (0.9 + pulse * 0.35);
 
-      const baseOp = p.opacity * (0.35 + glow * 0.65);
-      const r = p.size * (1 + glow * 0.6);
+      const haloGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 5);
+      haloGrad.addColorStop(0, `rgba(255, 226, 150, ${baseOp * 0.42})`);
+      haloGrad.addColorStop(0.42, `rgba(246, 197, 104, ${baseOp * 0.16})`);
+      haloGrad.addColorStop(1, 'rgba(255, 200, 100, 0)');
+      ctx.fillStyle = haloGrad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 5, 0, Math.PI * 2);
+      ctx.fill();
 
-      // Warmer Glow-Halo
-      if (glow > 0.05) {
-        const haloGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 6);
-        haloGrad.addColorStop(0, `rgba(255, 230, 150, ${baseOp * 0.5})`);
-        haloGrad.addColorStop(0.4, `rgba(255, 210, 120, ${baseOp * 0.18})`);
-        haloGrad.addColorStop(1, 'rgba(255, 200, 100, 0)');
-        ctx.fillStyle = haloGrad;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, r * 6, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Pollen-Kern
+      // Funken-Kern
       const coreGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
-      const coreCol = glow > 0.1
-        ? `rgba(255, 240, 180, ${baseOp})`
-        : `rgba(220, 200, 150, ${baseOp * 0.6})`;
+      const coreCol = `rgba(255, 232, 176, ${baseOp})`;
       coreGrad.addColorStop(0, coreCol);
       coreGrad.addColorStop(1, 'rgba(200, 180, 130, 0)');
       ctx.fillStyle = coreGrad;
@@ -705,27 +814,36 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     const drawWave = (p: Particle, time: number) => {
       const wave = Math.sin(time * 0.001 * p.speed + p.phase);
       const op = p.opacity * (0.5 + wave * 0.5);
-      const cy = p.y + wave * 16;
+      const layerIndex = p.index ?? 0;
+      const isRearWave = layerIndex < 3;
+      const horizontalDrift = Math.sin(time * 0.00038 * p.speed + p.phase * 1.3) * (isRearWave ? 56 + layerIndex * 18 : 34 + (layerIndex - 3) * 12);
+      const drawX = p.x + horizontalDrift;
+      const driftAmplitude = isRearWave ? 5 + layerIndex * 1.8 : 12 + (layerIndex - 3) * 2.5;
+      const cy = p.y + wave * driftAmplitude;
+      const rearBoost = isRearWave ? 1.28 - layerIndex * 0.09 : 1.18;
+      const backHeight = isRearWave ? 24 + layerIndex * 6 : 50 + (layerIndex - 3) * 6;
+      const frontHeight = isRearWave ? 15 + layerIndex * 3.5 : 34 + (layerIndex - 3) * 5;
+      const backOffset = isRearWave ? 2 + layerIndex * 1.5 : 6;
 
       // Hintere dunkel-blaue Schicht
-      const back = ctx.createLinearGradient(0, cy - 30, 0, cy + 50);
+      const back = ctx.createLinearGradient(0, cy - backHeight * 0.6, 0, cy + backHeight);
       back.addColorStop(0, 'rgba(20, 50, 65, 0)');
-      back.addColorStop(0.4, `rgba(35, 75, 95, ${op * 0.6})`);
+      back.addColorStop(0.4, `rgba(35, 75, 95, ${op * (isRearWave ? 0.88 : 0.72) * rearBoost})`);
       back.addColorStop(1, 'rgba(25, 55, 70, 0)');
       ctx.fillStyle = back;
       ctx.beginPath();
-      ctx.ellipse(p.x, cy + 6, p.size * 0.5, 48, 0, 0, Math.PI * 2);
+      ctx.ellipse(drawX, cy + backOffset, p.size * 0.5, backHeight, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Helle transparent-blaue Wasserfront
-      const front = ctx.createLinearGradient(0, cy - 18, 0, cy + 28);
+      const front = ctx.createLinearGradient(0, cy - frontHeight * 0.7, 0, cy + frontHeight);
       front.addColorStop(0, 'rgba(220, 240, 250, 0)');
-      front.addColorStop(0.3, `rgba(220, 240, 250, ${op * 0.85})`);
-      front.addColorStop(0.7, `rgba(180, 220, 240, ${op * 0.45})`);
+      front.addColorStop(0.3, `rgba(220, 240, 250, ${op * (isRearWave ? 0.72 : 1.02) * rearBoost})`);
+      front.addColorStop(0.7, `rgba(180, 220, 240, ${op * (isRearWave ? 0.42 : 0.64) * rearBoost})`);
       front.addColorStop(1, 'rgba(160, 200, 230, 0)');
       ctx.fillStyle = front;
       ctx.beginPath();
-      ctx.ellipse(p.x, cy, p.size * 0.48, 30 + wave * 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(drawX, cy, p.size * 0.48, frontHeight + wave * (isRearWave ? 4 : 9), 0, 0, Math.PI * 2);
       ctx.fill();
     };
 
@@ -1090,8 +1208,12 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           case 'dust-mote': drawDustMote(p, timestamp); break;
           case 'star': drawStar(p, timestamp); break;
           case 'fog-band': drawFogBand(p, timestamp); break;
+          case 'mist-wisp': drawMistWisp(p, timestamp); break;
           case 'leaf': drawLeaf(p, timestamp); break;
           case 'ripple': drawRipple(p); break;
+          case 'stone-drop': drawStoneDrop(p, timestamp); break;
+          case 'stone-ring': drawStoneRing(p); break;
+          case 'prayer-light': drawPrayerLight(p, timestamp); break;
           case 'ember': drawEmber(p, timestamp); break;
           case 'train-light': drawTrainLight(p, timestamp); break;
           case 'caustic': drawFloorCaustic(p, timestamp); break;
@@ -1155,6 +1277,23 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
             }
             break;
           }
+          case 'mist-wisp': {
+            if (p.y < -p.size * 0.4 || p.life > p.maxLife) {
+              const maxLife = 100 + Math.random() * 160;
+              p.x = width * (0.12 + Math.random() * 0.76);
+              p.y = height * (0.42 + Math.random() * 0.18);
+              p.vx = -0.055 + Math.random() * 0.11;
+              p.vy = -0.075 - Math.random() * 0.095;
+              p.size = 300 + Math.random() * 340;
+              p.opacity = 0.1 + Math.random() * 0.07;
+              p.life = 0;
+              p.maxLife = maxLife;
+              p.phase = Math.random() * Math.PI * 2;
+              p.speed = 0.28 + Math.random() * 0.24;
+              p.amplitude = 58 + Math.random() * 62;
+            }
+            break;
+          }
           case 'leaf': {
             p.rotation = (p.rotation ?? 0) + (p.rotationSpeed ?? 0);
             if (p.y > height + 40 || p.x < -80 || p.x > width + 80) {
@@ -1178,6 +1317,60 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
               p.y = height * (0.18 + Math.random() * 0.52);
               p.size = 14 + Math.random() * 30;
               p.opacity = 0.16 + Math.random() * 0.22;
+            }
+            break;
+          }
+          case 'stone-drop': {
+            if (p.y >= (p.baseY ?? height * 0.72)) {
+              p.kind = 'stone-ring';
+              p.y = p.baseY ?? p.y;
+              p.vx = 0;
+              p.vy = 0;
+              p.life = 0;
+              p.maxLife = 18 + Math.random() * 14;
+              p.size = 2.5 + Math.random() * 4.5;
+              p.opacity = 0.2 + Math.random() * 0.16;
+              p.amplitude = 8 + Math.random() * 10;
+            }
+            break;
+          }
+          case 'stone-ring': {
+            if (p.life > p.maxLife) {
+              p.kind = 'stone-drop';
+              p.x = width * (0.14 + Math.random() * 0.72);
+              p.y = height * (0.04 + Math.random() * 0.22);
+              p.vx = -0.08 + Math.random() * 0.16;
+              p.vy = 3.6 + Math.random() * 2.4;
+              p.size = 8 + Math.random() * 10;
+              p.opacity = 0.18 + Math.random() * 0.18;
+              p.life = 0;
+              p.maxLife = 1;
+              p.phase = Math.random() * Math.PI * 2;
+              p.speed = 0.7 + Math.random() * 0.6;
+              p.baseY = height * (0.5 + Math.random() * 0.36);
+              p.amplitude = 8 + Math.random() * 12;
+            }
+            break;
+          }
+          case 'prayer-light': {
+            if (p.y < -height * 0.22 || p.life > p.maxLife || p.x < -30 || p.x > width + 30) {
+              const respawnInUpperShaft = Math.random() < 0.35;
+              const respawnX = 0.16 + Math.random() * 0.68;
+              p.x = width * respawnX;
+              p.y = respawnInUpperShaft
+                ? height * (0.18 + Math.random() * 0.38)
+                : height * (0.82 + Math.random() * 0.12);
+              p.vx = (0.5 - respawnX) * (0.36 + Math.random() * 0.18);
+              p.vy = -0.18 - Math.random() * 0.16;
+              p.size = 1.8 + Math.random() * 2.8;
+              p.opacity = 0.24 + Math.random() * 0.22;
+              p.life = 0;
+              p.maxLife = 340 + Math.random() * 220;
+              p.phase = Math.random() * Math.PI * 2;
+              p.speed = 0.24 + Math.random() * 0.24;
+              p.amplitude = 4 + Math.random() * 10;
+              p.glowIntensity = 0.88 + Math.random() * 0.36;
+              p.hue = 42 + Math.random() * 10;
             }
             break;
           }

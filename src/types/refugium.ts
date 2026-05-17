@@ -21,12 +21,32 @@ export interface AmbientAudioConfig {
   baseFrequency?: number;
   modulationSpeed?: number;
   volume: number; // 0.0 bis 1.0
+  sampleLayer?: {
+    url: string;
+    volume: number;
+    startDelay?: number;
+    startOffset?: number;
+    fadeInSeconds?: number;
+    loop?: boolean;
+    lowpass?: number;
+    roomGainMultiplier?: number;
+  };
 }
 
 export interface SingleSoundConfig {
   name: string;
   frequency: number;
-  type: 'sine' | 'triangle' | 'bell' | 'chime' | 'thunder' | 'drip';
+  type: 'sine' | 'triangle' | 'bell' | 'chime' | 'thunder' | 'drip' | 'sample';
+  startImmediately?: boolean;
+  sample?: {
+    url: string;
+    volume: number;
+    lowpass?: number;
+    startOffset?: number;
+    clipDuration?: number;
+    playbackRateMin?: number;
+    playbackRateMax?: number;
+  };
   intervalMin: number; // in Sekunden
   intervalMax: number;
 }
@@ -39,7 +59,7 @@ export interface Room {
   visual: {
     type: 'css-ambient' | 'image' | 'video';
     background: string; // CSS Gradient, Image URL oder Video URL
-    overlayEffect?: 'rain' | 'dust' | 'stars' | 'fog' | 'leaves' | 'water' | 'fire' | 'train-lights' | 'rays' | 'waves' | 'underwater';
+    overlayEffect?: 'rain' | 'dust' | 'stars' | 'fog' | 'mist' | 'leaves' | 'water' | 'stone-drips' | 'prayer-lights' | 'fire' | 'train-lights' | 'rays' | 'waves' | 'underwater';
   };
   audio: AmbientAudioConfig;
   singleSounds?: SingleSoundConfig[];

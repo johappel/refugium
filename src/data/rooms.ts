@@ -122,13 +122,13 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'ufer-nebel',
-    name: 'Ufer im Nebel',
+    name: 'Im Nebel',
     emotionalWord: 'Weite',
     thought: 'Wasser und Luft verschwimmen zu einem einzigen weichen Grau. Alles Harte bleibt jenseits des Nebels zurück. Am Ufer darf dein Inneres leiser werden.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'linear-gradient(180deg, #2d3748 0%, #1a202c 55%, #0f172a 100%)',
-      overlayEffect: 'fog'
+      overlayEffect: 'mist'
     },
     audio: { type: 'shoreline', volume: 0.24 },
     singleSounds: [
@@ -146,17 +146,29 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'stiller-innenhof',
-    name: 'Alter Brunnenhof',
+    name: 'Alter Brunnen',
     emotionalWord: 'Einkehr',
     thought: 'Der alte Brunnen hält ein dunkles Auge aus Wasser in der Mitte des Hofes. Moosbedeckte Steine tragen noch die Wärme des Tages. Niemand sucht dich hier, und genau das macht diesen Ort so sanft.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'radial-gradient(circle at 50% 60%, #27272a 0%, #18181b 60%, #09090b 100%)',
-      overlayEffect: 'water'
+      overlayEffect: 'stone-drips'
     },
-    audio: { type: 'courtyard', volume: 0.22 },
+    audio: { type: 'silence', volume: 0 },
     singleSounds: [
-      { name: 'Stone Echo', frequency: 349.23, type: 'bell', intervalMin: 70, intervalMax: 140 }
+      {
+        name: 'Brunnen',
+        frequency: 329.63,
+        type: 'sample',
+        startImmediately: true,
+        sample: {
+          url: '/sound-effects/brunnen.mp3',
+          volume: 0.22,
+          lowpass: 2600
+        },
+        intervalMin: 60,
+        intervalMax: 60
+      }
     ],
     clickAreas: [
       { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 22, y: 14, width: 18, height: 24, label: 'Die hohen Fenster der Bibliothek' },
@@ -175,13 +187,27 @@ export const INITIAL_ROOMS: Room[] = [
     emotionalWord: 'Andacht',
     thought: 'Kühler Stein, warmes Kerzenlicht und eine Stille, die nichts von dir verlangt. Zwischen den Bänken darf alles schwer Gewordene einfach sinken.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'radial-gradient(circle at 50% 18%, #473b2f 0%, #211b17 45%, #080706 100%)',
-      overlayEffect: 'dust'
+      overlayEffect: 'prayer-lights'
     },
-    audio: { type: 'cathedral', volume: 0.24 },
+    audio: { type: 'silence', volume: 0 },
     singleSounds: [
-      { name: 'Fernes Nachklingen', frequency: 293.66, type: 'chime', intervalMin: 120, intervalMax: 220 }
+      {
+        name: 'Glockenschlag',
+        frequency: 293.66,
+        type: 'sample',
+        sample: {
+          url: '/sound-effects/glocke.mp3',
+          volume: 0.2,
+          lowpass: 2400,
+          clipDuration: 5.5,
+          playbackRateMin: 0.99,
+          playbackRateMax: 1.01
+        },
+        intervalMin: 15,
+        intervalMax: 15
+      }
     ],
     clickAreas: [
       { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 12, y: 58, width: 18, height: 28, label: 'Durch den stillen Kreuzgang zurück' },
@@ -199,18 +225,25 @@ export const INITIAL_ROOMS: Room[] = [
     emotionalWord: 'Geborgenheit',
     thought: 'Warmes Licht sickert durch das Blätterdach. Der Waldboden gibt sanft nach. Hier kannst du auftanken, bevor du weiterziehst.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'radial-gradient(ellipse at 50% 0%, #3d4a25 0%, #1f2914 50%, #0d1208 100%)',
       overlayEffect: 'rays'
     },
-    audio: { type: 'forest', volume: 0.34 },
-    singleSounds: [
-      { name: 'Distant Bird', frequency: 1046.5, type: 'bell', intervalMin: 45, intervalMax: 95 }
-    ],
+    audio: {
+      type: 'silence',
+      volume: 0.34,
+      sampleLayer: {
+        url: '/sound-effects/hain.mp3',
+        volume: 0.22,
+        fadeInSeconds: 2.5,
+        loop: true,
+        lowpass: 2200
+      }
+    },
     clickAreas: [
       { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 10, y: 40, width: 20, height: 40, label: 'Zurück zum schattigen Glashaus' },
       { id: 'ca-hain-2', targetRoomId: 'stiller-innenhof', x: 70, y: 50, width: 25, height: 35, label: 'Rückweg zum steinernen Innenhof' },
-      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 40, y: 75, width: 20, height: 20, label: 'Ein sandiger Trampelpfad hinab' }
+      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 6, y: 78, width: 18, height: 18, label: 'Ein sandiger Trampelpfad hinab' }
     ],
     transitionType: 'tuer',
     movementIntensity: 'gering',
@@ -223,11 +256,24 @@ export const INITIAL_ROOMS: Room[] = [
     emotionalWord: 'Weite',
     thought: 'Der Horizont verschwimmt zwischen Wasser und Himmel. Jede Welle nimmt ein wenig Anspannung mit sich fort. Hier darf der Tag enden, ohne noch etwas von dir zu wollen.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'linear-gradient(180deg, #1e3542 0%, #2a4a5a 30%, #1c3a47 60%, #0f1f26 100%)',
       overlayEffect: 'waves'
     },
-    audio: { type: 'ocean', volume: 0.32 },
+    audio: {
+      type: 'ocean',
+      volume: 0.32,
+      sampleLayer: {
+        url: '/sound-effects/deep-ocean.mp3',
+        volume: 0.22,
+        startDelay: 1,
+        startOffset: 0.45,
+        fadeInSeconds: 1.5,
+        loop: true,
+        lowpass: 1500,
+        roomGainMultiplier: 0.58
+      }
+    },
     singleSounds: [
       { name: 'Wave Crest', frequency: 180, type: 'sine', intervalMin: 24, intervalMax: 56 }
     ],
@@ -243,7 +289,7 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'blaue-lagune',
-    name: 'Blaue Lagune',
+    name: 'Meeresgrotte',
     emotionalWord: 'Sanftheit',
     thought: 'Zwischen dunklem Fels und ruhigem Wasser sammelt sich türkises Licht. Jeder Atemzug wird weiter. Hier fühlt sich selbst die Stille freundlich an.',
     visual: {
