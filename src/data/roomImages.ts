@@ -1,6 +1,7 @@
 import fensterplatzRegen from '../assets/Fensterplatz-am-Regen.png';
 import bibliothekNacht from '../assets/bibliothek-nacht.jpg';
 import wintergarten from '../assets/wintergarten.jpg';
+import nachtzug from '../components/Nachtzug.png';
 
 const blaueLagune = '/images/grotte-lagune.png';
 const sandstrand = '/images/sandstrand.png';
@@ -13,6 +14,7 @@ export const ROOM_IMAGES: Record<string, string> = {
   'fensterplatz-regen': fensterplatzRegen,
   'bibliothek-nacht': bibliothekNacht,
   'wintergarten': wintergarten,
+  'nachtzug': nachtzug,
   'ufer-nebel': nebel,
   'stiller-innenhof': brunnen,
   'leere-kirche': kirche,

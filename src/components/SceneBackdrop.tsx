@@ -22,6 +22,11 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
             maskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.14) 38%, rgba(0,0,0,0.92) 47%, rgba(0,0,0,1) 55%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 74%)',
             WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.14) 38%, rgba(0,0,0,0.92) 47%, rgba(0,0,0,1) 55%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 74%)'
           }
+      : room.id === 'nachtzug' && room.visual.overlayEffect === 'train-lights'
+        ? {
+            maskImage: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.98) 60%, rgba(0,0,0,0.82) 72%, rgba(0,0,0,0.28) 86%, rgba(0,0,0,0) 96%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.98) 60%, rgba(0,0,0,0.82) 72%, rgba(0,0,0,0.28) 86%, rgba(0,0,0,0) 96%)'
+          }
       : room.id === 'blaue-lagune' && room.visual.overlayEffect === 'water'
         ? {
             maskImage: 'radial-gradient(ellipse at 18% 42%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 18%, rgba(0,0,0,0.78) 34%, rgba(0,0,0,0.26) 50%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0) 72%)',
@@ -46,12 +51,12 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
   const overlayWrapperStyle: React.CSSProperties =
     room.id === 'nachtzug' && room.visual.overlayEffect === 'train-lights'
       ? {
-          top: '14%',
-          left: '32%',
-          width: '58%',
-          height: '46%',
+          top: '11.5%',
+          left: '24.8%',
+          width: '50.8%',
+          height: '49.5%',
           overflow: 'hidden',
-          borderRadius: '1.8rem'
+          borderRadius: '2.4rem'
         }
       : room.id === 'blaue-lagune' && room.visual.overlayEffect === 'water'
         ? {
@@ -105,26 +110,10 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
       case 'nachtzug':
         return (
           <>
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,#16171d_0%,#0e1016_48%,#07080c_100%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_82%,rgba(180,120,76,0.18),transparent_24%),radial-gradient(circle_at_34%_68%,rgba(125,84,48,0.1),transparent_20%)]" />
-            <div className="absolute left-[4%] bottom-[8%] h-[34%] w-[30%] rounded-[3rem_3rem_0_0] bg-gradient-to-tr from-[#2a1c16] via-[#5b3c2f] to-[#241813] shadow-[0_-10px_50px_rgba(0,0,0,0.55)] opacity-95" />
-            <div className="absolute left-[7%] bottom-[18%] h-[12%] w-[17%] rounded-full bg-[radial-gradient(circle,rgba(255,202,132,0.22),transparent_72%)] blur-2xl" />
-            <div className="absolute right-[10%] top-[14%] h-[46%] w-[58%] overflow-hidden rounded-[1.8rem] border-[10px] border-[#2e2019]/90 shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_24px_70px_rgba(0,0,0,0.55)]">
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,#21303f_0%,#121923_42%,#090d13_100%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(255,238,205,0.08),transparent_20%),radial-gradient(circle_at_28%_38%,rgba(117,150,180,0.1),transparent_32%)]" />
-              <div className="absolute inset-y-0 left-[48%] w-[10px] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#3a2922]/90 to-transparent" />
-              <div className="absolute inset-x-0 top-[54%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-              <svg className="absolute inset-x-0 bottom-[18%] h-[30%] w-full opacity-45" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <path d="M0 200H800V120C720 126 654 98 584 110C520 121 448 151 378 141C307 131 237 97 164 105C97 113 47 142 0 132V200Z" fill="#0d1218" />
-              </svg>
-              <svg className="absolute inset-x-0 bottom-0 h-[26%] w-full opacity-55" viewBox="0 0 800 160" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <path d="M0 160H800V132L766 86L734 132L708 78L676 132L640 74L600 132L564 70L532 132L494 82L456 132L418 74L382 132L340 80L306 132L264 72L226 132L186 76L146 132L106 78L70 132L36 90L0 132V160Z" fill="#070b10" />
-              </svg>
-              <div className="absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(180deg,rgba(9,13,18,0)_0%,rgba(8,10,14,0.62)_45%,rgba(5,7,10,0.95)_100%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_0%,transparent_16%,transparent_84%,rgba(255,255,255,0.03)_100%)]" />
-            </div>
-            <div className="absolute right-[10%] top-[14%] h-[46%] w-[58%] rounded-[1.8rem] border border-white/5 pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 h-[18%] bg-[linear-gradient(180deg,rgba(11,8,7,0)_0%,rgba(11,8,7,0.82)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,8,12,0.08)_0%,rgba(6,6,9,0.14)_48%,rgba(4,4,6,0.34)_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_26%,rgba(255,182,118,0.18),transparent_16%),radial-gradient(circle_at_85%_26%,rgba(255,186,126,0.18),transparent_16%),radial-gradient(circle_at_50%_56%,rgba(138,168,204,0.07),transparent_26%)]" />
+            <div className="absolute inset-x-[24%] top-[11%] h-[51%] bg-[radial-gradient(ellipse_at_50%_45%,rgba(255,255,255,0.06),rgba(120,148,176,0.03)_58%,transparent_78%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-[22%] bg-[linear-gradient(180deg,rgba(9,7,6,0)_0%,rgba(8,7,6,0.46)_100%)]" />
           </>
         );
 

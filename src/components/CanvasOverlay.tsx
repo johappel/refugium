@@ -242,6 +242,7 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
         }
       } else if (effect === 'prayer-lights') {
         const prayerLightCount = Math.max(5, Math.round(7 * intensity));
+        const prayerLightExitY = -height * 0.22;
         for (let i = 0; i < prayerLightCount; i++) {
           const seededY =
             i === 0
@@ -249,16 +250,18 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
               : height * (0.82 + Math.random() * 0.14);
           const seededX = 0.16 + Math.random() * 0.68;
           const convergeX = (0.5 - seededX) * (0.36 + Math.random() * 0.18);
+          const riseSpeed = -0.18 - Math.random() * 0.16;
+          const framesToRoof = Math.ceil((seededY - prayerLightExitY) / Math.abs(riseSpeed));
           particles.push({
             kind: 'prayer-light',
             x: width * seededX,
             y: seededY,
             vx: convergeX,
-            vy: -0.18 - Math.random() * 0.16,
+            vy: riseSpeed,
             size: 1.8 + Math.random() * 2.8,
             opacity: 0.24 + Math.random() * 0.22,
             life: 0,
-            maxLife: 340 + Math.random() * 220,
+            maxLife: framesToRoof + 36,
             phase: Math.random() * Math.PI * 2,
             speed: 0.24 + Math.random() * 0.24,
             amplitude: 4 + Math.random() * 10,
@@ -1357,17 +1360,21 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           case 'prayer-light': {
             if (p.y < -height * 0.22 || p.life > p.maxLife || p.x < -30 || p.x > width + 30) {
               const respawnInUpperShaft = Math.random() < 0.08;
+              const prayerLightExitY = -height * 0.22;
               const respawnX = 0.16 + Math.random() * 0.68;
-              p.x = width * respawnX;
-              p.y = respawnInUpperShaft
+              const respawnY = respawnInUpperShaft
                 ? height * (0.22 + Math.random() * 0.3)
                 : height * (0.82 + Math.random() * 0.12);
+              const riseSpeed = -0.18 - Math.random() * 0.16;
+              const framesToRoof = Math.ceil((respawnY - prayerLightExitY) / Math.abs(riseSpeed));
+              p.x = width * respawnX;
+              p.y = respawnY;
               p.vx = (0.5 - respawnX) * (0.36 + Math.random() * 0.18);
-              p.vy = -0.18 - Math.random() * 0.16;
+              p.vy = riseSpeed;
               p.size = 1.8 + Math.random() * 2.8;
               p.opacity = 0.24 + Math.random() * 0.22;
               p.life = 0;
-              p.maxLife = 340 + Math.random() * 220;
+              p.maxLife = framesToRoof + 36;
               p.phase = Math.random() * Math.PI * 2;
               p.speed = 0.24 + Math.random() * 0.24;
               p.amplitude = 4 + Math.random() * 10;

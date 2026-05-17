@@ -79,7 +79,7 @@ export const INITIAL_ROOMS: Room[] = [
     emotionalWord: 'Loslassen',
     thought: 'Du sitzt geschützt im warmen Abteil und blickst durch das dunkle Fenster in die vorbeiziehende Nacht. Das gleichmäßige Wiegen trägt dich, ohne etwas von dir zu verlangen. Hier musst du nirgends ankommen.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'linear-gradient(135deg, #1b1e2b 0%, #10121a 50%, #06070a 100%)',
       overlayEffect: 'train-lights'
     },
