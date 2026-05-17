@@ -211,6 +211,18 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,13,18,0.16)_0%,rgba(5,14,18,0.08)_35%,rgba(3,8,12,0.28)_100%)]" />
             <div className="absolute left-[7%] top-[18%] h-[28%] w-[16%] rounded-full bg-[radial-gradient(circle,rgba(255,176,92,0.16),transparent_72%)] blur-3xl" />
             <div className="absolute right-[7%] top-[18%] h-[26%] w-[16%] rounded-full bg-[radial-gradient(circle,rgba(255,176,92,0.14),transparent_72%)] blur-3xl" />
+            <div
+              className="absolute left-[9%] top-[14%] h-[34%] w-[22%] rounded-full bg-[radial-gradient(circle_at_42%_45%,rgba(255,214,140,0.28),rgba(255,146,62,0.16)_30%,rgba(78,34,12,0.04)_58%,transparent_76%)] mix-blend-screen blur-3xl animate-torch-flicker"
+              style={{ animationDuration: '4.8s' }}
+            />
+            <div
+              className="absolute right-[-3%] top-[12%] h-[34%] w-[24%] rounded-full bg-[radial-gradient(circle_at_82%_42%,rgba(255,224,168,0.28),rgba(255,154,72,0.16)_26%,rgba(92,40,16,0.05)_52%,transparent_74%)] mix-blend-screen blur-3xl animate-torch-flicker"
+              style={{ animationDuration: '5.6s', animationDelay: '0.9s' }}
+            />
+            <div
+              className="absolute inset-x-[18%] top-[6%] h-[34%] bg-[radial-gradient(ellipse_at_50%_24%,rgba(255,196,110,0.14),rgba(255,150,70,0.06)_35%,transparent_72%)] mix-blend-soft-light blur-[52px] animate-torch-flicker"
+              style={{ animationDuration: '6.4s', animationDelay: '0.4s' }}
+            />
             <div className="absolute inset-x-[24%] bottom-[10%] h-[18%] bg-[radial-gradient(ellipse_at_50%_40%,rgba(120,240,255,0.18),transparent_70%)] blur-2xl" />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.2)_0%,transparent_18%,transparent_82%,rgba(0,0,0,0.18)_100%)]" />
           </>
