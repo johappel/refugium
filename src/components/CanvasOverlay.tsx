@@ -122,35 +122,35 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           });
         }
       } else if (effect === 'stars') {
-        for (let i = 0; i < 85 * intensity; i++) {
+        for (let i = 0; i < 42 * intensity; i++) {
           particles.push({
             kind: 'star',
             x: Math.random() * width,
-            y: Math.random() * height * 0.72,
+            y: Math.random() * height * 0.62,
             vx: 0,
             vy: 0,
-            size: 0.9 + Math.random() * 2.6,
-            opacity: 0.2 + Math.random() * 0.65,
-            life: Math.random() * 220,
-            maxLife: 170 + Math.random() * 260,
+            size: 0.9 + Math.random() * 2.2,
+            opacity: 0.16 + Math.random() * 0.34,
+            life: Math.random() * 800,
+            maxLife: 600 + Math.random() * 1400,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.6 + Math.random() * 1.2
+            speed: 0.35 + Math.random() * 0.35
           });
         }
       } else if (effect === 'fog') {
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 5; i++) {
           particles.push({
             kind: 'fog-band',
-            x: (i / 7) * width - 160,
-            y: height * (0.2 + Math.random() * 0.55),
-            vx: 0.14 + Math.random() * 0.2,
+            x: (i / 5) * width - 220,
+            y: height * (0.24 + Math.random() * 0.48),
+            vx: 0.08 + Math.random() * 0.12,
             vy: 0,
-            size: 180 + Math.random() * 320,
-            opacity: 0.05 + Math.random() * 0.1,
+            size: 280 + Math.random() * 380,
+            opacity: 0.035 + Math.random() * 0.05,
             life: 0,
             maxLife: 1,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.35 + Math.random() * 0.3
+            speed: 0.22 + Math.random() * 0.22
           });
         }
       } else if (effect === 'leaves') {
@@ -467,18 +467,22 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     };
 
     const drawStar = (p: Particle, time: number) => {
-      const twinkle = 0.35 + Math.sin(time * 0.012 * p.speed + p.phase) * 0.65;
-      const op = p.opacity * twinkle;
+      const cycle = p.life / p.maxLife;
+      const pulseWindow = cycle < 0.12 ? Math.sin((cycle / 0.12) * Math.PI) : 0;
+      const breathingBase = 0.65 + Math.sin(time * 0.00045 + p.phase) * 0.08;
+      const op = p.opacity * (breathingBase + pulseWindow * 1.15);
       const r = p.size;
 
-      ctx.fillStyle = `rgba(220, 235, 255, ${op})`;
+      ctx.fillStyle = pulseWindow > 0.01
+        ? `rgba(245, 248, 255, ${op})`
+        : `rgba(214, 226, 238, ${op})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
       ctx.fill();
 
-      if (r > 1.7) {
-        const arm = r * 3.5;
-        ctx.strokeStyle = `rgba(205, 225, 255, ${op * 0.55})`;
+      if (r > 1.6 && pulseWindow > 0.45) {
+        const arm = r * (3.2 + pulseWindow * 1.8);
+        ctx.strokeStyle = `rgba(225, 236, 255, ${op * 0.45})`;
         ctx.lineWidth = 0.7;
         ctx.beginPath();
         ctx.moveTo(p.x - arm, p.y);
@@ -491,16 +495,20 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
 
     const drawFogBand = (p: Particle, time: number) => {
       const breath = 0.6 + Math.sin(time * 0.0008 * p.speed + p.phase) * 0.4;
-      const dy = Math.sin(time * 0.0005 + p.phase) * 8;
-      const w = p.size * (0.9 + breath * 0.25);
-      const h = p.size * (0.18 + breath * 0.1);
-      const grad = ctx.createRadialGradient(p.x, p.y + dy, 0, p.x, p.y + dy, w * 0.65);
-      grad.addColorStop(0, `rgba(220, 230, 240, ${p.opacity * breath})`);
+      const dy = Math.sin(time * 0.00035 + p.phase) * 10;
+      const w = p.size * (0.88 + breath * 0.22);
+      const h = p.size * (0.15 + breath * 0.07);
+      ctx.save();
+      ctx.filter = 'blur(22px)';
+      const grad = ctx.createRadialGradient(p.x, p.y + dy, 0, p.x, p.y + dy, w * 0.62);
+      grad.addColorStop(0, `rgba(228, 236, 241, ${p.opacity * breath})`);
+      grad.addColorStop(0.55, `rgba(208, 220, 228, ${p.opacity * breath * 0.45})`);
       grad.addColorStop(1, 'rgba(200, 215, 230, 0)');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.ellipse(p.x, p.y + dy, w, h, 0, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     };
 
     const drawLeaf = (p: Particle, time: number) => {
@@ -557,12 +565,15 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     const drawTrainLight = (p: Particle, time: number) => {
       const swayY = Math.sin(time * 0.002 * p.speed + p.phase) * 5;
       const length = p.size * (0.9 + Math.sin(time * 0.001 + p.phase) * 0.2);
+      ctx.save();
+      ctx.filter = 'blur(1.5px)';
       const grad = ctx.createLinearGradient(p.x - length, p.y + swayY, p.x + length, p.y + swayY);
       grad.addColorStop(0, 'rgba(180, 210, 255, 0)');
       grad.addColorStop(0.5, `rgba(220, 235, 255, ${p.opacity})`);
       grad.addColorStop(1, 'rgba(180, 210, 255, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(p.x - length, p.y + swayY - 1.1, length * 2, 2.2);
+      ctx.restore();
     };
 
     // ============================================================
@@ -1112,11 +1123,11 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           case 'star': {
             if (p.life > p.maxLife) {
               p.life = 0;
-              p.maxLife = 170 + Math.random() * 260;
+              p.maxLife = 600 + Math.random() * 1400;
               p.x = Math.random() * width;
-              p.y = Math.random() * height * 0.72;
-              p.size = 0.9 + Math.random() * 2.6;
-              p.opacity = 0.2 + Math.random() * 0.65;
+              p.y = Math.random() * height * 0.62;
+              p.size = 0.9 + Math.random() * 2.2;
+              p.opacity = 0.16 + Math.random() * 0.34;
               p.phase = Math.random() * Math.PI * 2;
             }
             break;
@@ -1124,10 +1135,10 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           case 'fog-band': {
             if (p.x - p.size > width + 40) {
               p.x = -p.size - 60;
-              p.y = height * (0.2 + Math.random() * 0.55);
-              p.size = 180 + Math.random() * 320;
-              p.opacity = 0.05 + Math.random() * 0.1;
-              p.vx = 0.14 + Math.random() * 0.2;
+              p.y = height * (0.24 + Math.random() * 0.48);
+              p.size = 280 + Math.random() * 380;
+              p.opacity = 0.035 + Math.random() * 0.05;
+              p.vx = 0.08 + Math.random() * 0.12;
             }
             break;
           }

@@ -17,7 +17,7 @@ export interface ClickArea {
 }
 
 export interface AmbientAudioConfig {
-  type: 'rain' | 'library' | 'wind' | 'train' | 'space' | 'water' | 'silence' | 'forest' | 'ocean' | 'submarine';
+  type: 'rain' | 'library' | 'archive' | 'wind' | 'train' | 'space' | 'observatory' | 'water' | 'courtyard' | 'shoreline' | 'lagoon' | 'silence' | 'forest' | 'ocean' | 'submarine' | 'cathedral' | 'teahouse' | 'hearth';
   baseFrequency?: number;
   modulationSpeed?: number;
   volume: number; // 0.0 bis 1.0

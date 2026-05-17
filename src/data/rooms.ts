@@ -13,7 +13,7 @@ export const INITIAL_ROOMS: Room[] = [
     },
     audio: { type: 'rain', volume: 0.24 },
     singleSounds: [
-      { name: 'Distant Thunder', frequency: 110, type: 'thunder', intervalMin: 20, intervalMax: 45 }
+      { name: 'Distant Thunder', frequency: 110, type: 'thunder', intervalMin: 80, intervalMax: 160 }
     ],
     clickAreas: [
       { id: 'ca-regen-1', targetRoomId: 'bibliothek-nacht', x: 70, y: 30, width: 25, height: 40, label: 'Ein warmer Lichtschein im Flur' },
@@ -34,14 +34,15 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 30% 40%, #291e1e 0%, #1a1010 60%, #0a0505 100%)',
       overlayEffect: 'dust'
     },
-    audio: { type: 'library', volume: 0.4 },
+    audio: { type: 'archive', volume: 0.28 },
     singleSounds: [
-      { name: 'Soft Chime', frequency: 523.25, type: 'chime', intervalMin: 30, intervalMax: 60 }
+      { name: 'Glass Resonance', frequency: 392, type: 'bell', intervalMin: 70, intervalMax: 130 }
     ],
     clickAreas: [
       { id: 'ca-bib-1', targetRoomId: 'fensterplatz-regen', x: 5, y: 20, width: 20, height: 60, label: 'Das leise Prasseln am Fenster' },
       { id: 'ca-bib-2', targetRoomId: 'sternwarte', x: 75, y: 15, width: 20, height: 50, label: 'Eine Wendeltreppe nach oben' },
-      { id: 'ca-bib-3', targetRoomId: 'stiller-innenhof', x: 40, y: 70, width: 25, height: 25, label: 'Schwere Holztür zum Hof' }
+      { id: 'ca-bib-3', targetRoomId: 'stiller-innenhof', x: 34, y: 70, width: 18, height: 24, label: 'Schwere Holztür zum Hof' },
+      { id: 'ca-bib-4', targetRoomId: 'leere-kirche', x: 54, y: 18, width: 16, height: 40, label: 'Ein schmaler Seitengang in die leere Kirche' }
     ],
     transitionType: 'tuer',
     movementIntensity: 'sehr_gering',
@@ -58,9 +59,9 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 60% 50%, #11251d 0%, #08140e 65%, #020604 100%)',
       overlayEffect: 'leaves'
     },
-    audio: { type: 'wind', volume: 0.4 },
+    audio: { type: 'wind', volume: 0.3 },
     singleSounds: [
-      { name: 'Wind Chime', frequency: 880, type: 'bell', intervalMin: 15, intervalMax: 40 }
+      { name: 'Wintergarten Chime', frequency: 783.99, type: 'bell', intervalMin: 28, intervalMax: 72 }
     ],
     clickAreas: [
       { id: 'ca-wint-1', targetRoomId: 'fensterplatz-regen', x: 15, y: 60, width: 25, height: 30, label: 'Zurück zum Fensterplatz' },
@@ -76,15 +77,15 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'nachtzug',
     name: 'Nachtzug',
     emotionalWord: 'Loslassen',
-    thought: 'Das gleichmäßige Wiegen trägt dich durch die Dunkelheit, ohne etwas von dir zu verlangen. Draußen huschen fremde Lichter vorbei. Hier musst du nirgends ankommen.',
+    thought: 'Du sitzt geschützt im warmen Abteil und blickst durch das dunkle Fenster in die vorbeiziehende Nacht. Das gleichmäßige Wiegen trägt dich, ohne etwas von dir zu verlangen. Hier musst du nirgends ankommen.',
     visual: {
       type: 'css-ambient',
       background: 'linear-gradient(135deg, #1b1e2b 0%, #10121a 50%, #06070a 100%)',
       overlayEffect: 'train-lights'
     },
-    audio: { type: 'train', volume: 0.5 },
+    audio: { type: 'train', volume: 0.3 },
     singleSounds: [
-      { name: 'Rail Click', frequency: 150, type: 'triangle', intervalMin: 10, intervalMax: 25 }
+      { name: 'Muted Rail Joint', frequency: 120, type: 'triangle', intervalMin: 30, intervalMax: 70 }
     ],
     clickAreas: [
       { id: 'ca-zug-1', targetRoomId: 'bibliothek-nacht', x: 10, y: 25, width: 20, height: 50, label: 'Abteil-Tür zum stillen Gang' },
@@ -105,14 +106,14 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%)',
       overlayEffect: 'stars'
     },
-    audio: { type: 'space', volume: 0.5 },
+    audio: { type: 'observatory', volume: 0.22 },
     singleSounds: [
-      { name: 'Star Shimmer', frequency: 1200, type: 'bell', intervalMin: 25, intervalMax: 50 }
+      { name: 'Star Shimmer', frequency: 880, type: 'bell', intervalMin: 110, intervalMax: 220 }
     ],
     clickAreas: [
       { id: 'ca-stern-1', targetRoomId: 'bibliothek-nacht', x: 20, y: 65, width: 25, height: 25, label: 'Die dunkle Holztreppe hinab' },
       { id: 'ca-stern-2', targetRoomId: 'nachtzug', x: 75, y: 55, width: 20, height: 35, label: 'Ein fernes Grollen am Horizont' },
-      { id: 'ca-stern-3', targetRoomId: 'unterwasserstation', x: 45, y: 15, width: 15, height: 30, label: 'Ein tiefblaues Okular' }
+      { id: 'ca-stern-3', targetRoomId: 'blaue-lagune', x: 45, y: 15, width: 15, height: 30, label: 'Ein türkisblauer Lichtsaum in der Felswand' }
     ],
     transitionType: 'dunkelheit',
     movementIntensity: 'sehr_gering',
@@ -129,9 +130,9 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'linear-gradient(180deg, #2d3748 0%, #1a202c 55%, #0f172a 100%)',
       overlayEffect: 'fog'
     },
-    audio: { type: 'water', volume: 0.5 },
+    audio: { type: 'shoreline', volume: 0.24 },
     singleSounds: [
-      { name: 'Water Lap', frequency: 300, type: 'sine', intervalMin: 12, intervalMax: 30 }
+      { name: 'Water Lap', frequency: 220, type: 'sine', intervalMin: 24, intervalMax: 60 }
     ],
     clickAreas: [
       { id: 'ca-ufer-1', targetRoomId: 'wintergarten', x: 10, y: 30, width: 25, height: 40, label: 'Der Umriss eines Glashauses' },
@@ -145,26 +146,50 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'stiller-innenhof',
-    name: 'Stiller Innenhof',
+    name: 'Alter Brunnenhof',
     emotionalWord: 'Einkehr',
-    thought: 'Ein alter Brunnen flüstert vor sich hin. Moosbedeckte Steine halten die Wärme des vergangenen Tages. Niemand sucht dich hier, und genau das macht diesen Ort so sanft.',
+    thought: 'Der alte Brunnen hält ein dunkles Auge aus Wasser in der Mitte des Hofes. Moosbedeckte Steine tragen noch die Wärme des Tages. Niemand sucht dich hier, und genau das macht diesen Ort so sanft.',
     visual: {
       type: 'css-ambient',
       background: 'radial-gradient(circle at 50% 60%, #27272a 0%, #18181b 60%, #09090b 100%)',
       overlayEffect: 'water'
     },
-    audio: { type: 'silence', volume: 0.3 },
+    audio: { type: 'courtyard', volume: 0.22 },
     singleSounds: [
-      { name: 'Stone Echo', frequency: 440, type: 'bell', intervalMin: 35, intervalMax: 70 }
+      { name: 'Stone Echo', frequency: 349.23, type: 'bell', intervalMin: 70, intervalMax: 140 }
     ],
     clickAreas: [
-      { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 30, y: 15, width: 40, height: 25, label: 'Die hohen Fenster der Bibliothek' },
+      { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 22, y: 14, width: 18, height: 24, label: 'Die hohen Fenster der Bibliothek' },
+      { id: 'ca-hof-4', targetRoomId: 'leere-kirche', x: 53, y: 14, width: 20, height: 30, label: 'Ein Rundbogen in die leere Kirche' },
       { id: 'ca-hof-2', targetRoomId: 'ufer-nebel', x: 5, y: 50, width: 20, height: 40, label: 'Ein kühler Luftzug vom Wasser' },
       { id: 'ca-hof-3', targetRoomId: 'hain', x: 75, y: 20, width: 20, height: 40, label: 'Eine überwucherte Pforte' }
     ],
     transitionType: 'wasserreflexion',
     movementIntensity: 'sehr_gering',
     colorTemperature: '#18181B',
+    hasAblageGeste: false
+  },
+  {
+    id: 'leere-kirche',
+    name: 'Leere Kirche',
+    emotionalWord: 'Andacht',
+    thought: 'Kühler Stein, warmes Kerzenlicht und eine Stille, die nichts von dir verlangt. Zwischen den Bänken darf alles schwer Gewordene einfach sinken.',
+    visual: {
+      type: 'css-ambient',
+      background: 'radial-gradient(circle at 50% 18%, #473b2f 0%, #211b17 45%, #080706 100%)',
+      overlayEffect: 'dust'
+    },
+    audio: { type: 'cathedral', volume: 0.24 },
+    singleSounds: [
+      { name: 'Fernes Nachklingen', frequency: 293.66, type: 'chime', intervalMin: 120, intervalMax: 220 }
+    ],
+    clickAreas: [
+      { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 12, y: 58, width: 18, height: 28, label: 'Durch den stillen Kreuzgang zurück' },
+      { id: 'ca-kirche-2', targetRoomId: 'bibliothek-nacht', x: 70, y: 28, width: 18, height: 42, label: 'Seitenschiff zur Bibliothek' }
+    ],
+    transitionType: 'dunkelheit',
+    movementIntensity: 'sehr_gering',
+    colorTemperature: '#1B1713',
     hasAblageGeste: false
   },
   // 3 NEUE ORTE - VERBESSERT
@@ -178,9 +203,9 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(ellipse at 50% 0%, #3d4a25 0%, #1f2914 50%, #0d1208 100%)',
       overlayEffect: 'rays'
     },
-    audio: { type: 'forest', volume: 0.48 },
+    audio: { type: 'forest', volume: 0.34 },
     singleSounds: [
-      { name: 'Distant Bird', frequency: 1200, type: 'bell', intervalMin: 25, intervalMax: 55 }
+      { name: 'Distant Bird', frequency: 1046.5, type: 'bell', intervalMin: 45, intervalMax: 95 }
     ],
     clickAreas: [
       { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 10, y: 40, width: 20, height: 40, label: 'Zurück zum schattigen Glashaus' },
@@ -202,14 +227,14 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'linear-gradient(180deg, #1e3542 0%, #2a4a5a 30%, #1c3a47 60%, #0f1f26 100%)',
       overlayEffect: 'waves'
     },
-    audio: { type: 'ocean', volume: 0.58 },
+    audio: { type: 'ocean', volume: 0.32 },
     singleSounds: [
-      { name: 'Wave Crest', frequency: 200, type: 'sine', intervalMin: 12, intervalMax: 28 }
+      { name: 'Wave Crest', frequency: 180, type: 'sine', intervalMin: 24, intervalMax: 56 }
     ],
     clickAreas: [
       { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 10, y: 30, width: 20, height: 45, label: 'Kühler Nebelpfad am Wasser' },
       { id: 'ca-strand-2', targetRoomId: 'hain', x: 70, y: 20, width: 20, height: 40, label: 'Weg hinauf in den schattigen Hain' },
-      { id: 'ca-strand-3', targetRoomId: 'unterwasserstation', x: 40, y: 65, width: 20, height: 20, label: 'Eine eiserne Luke im Sand' }
+      { id: 'ca-strand-3', targetRoomId: 'blaue-lagune', x: 40, y: 65, width: 20, height: 20, label: 'Ein schmaler Felspfad zur blauen Lagune' }
     ],
     transitionType: 'wasserreflexion',
     movementIntensity: 'moderat',
@@ -217,26 +242,26 @@ export const INITIAL_ROOMS: Room[] = [
     hasAblageGeste: true
   },
   {
-    id: 'unterwasserstation',
-    name: 'Tiefsee-Beobachtungsluke',
-    emotionalWord: 'Gelassenheit',
-    thought: 'Das Bullauge hält die Tiefe draußen und macht sie sanft. Blasen steigen wie gelöste Gedanken auf. In diesem stillen Blau ist alles entschleunigt.',
+    id: 'blaue-lagune',
+    name: 'Blaue Lagune',
+    emotionalWord: 'Sanftheit',
+    thought: 'Zwischen dunklem Fels und ruhigem Wasser sammelt sich türkises Licht. Jeder Atemzug wird weiter. Hier fühlt sich selbst die Stille freundlich an.',
     visual: {
       type: 'css-ambient',
-      background: 'radial-gradient(circle at 50% 50%, #0d4a5c 0%, #052a35 40%, #021016 100%)',
-      overlayEffect: 'underwater'
+      background: 'radial-gradient(circle at 50% 30%, #1e6b7b 0%, #0a3340 35%, #04161c 100%)',
+      overlayEffect: 'water'
     },
-    audio: { type: 'submarine', volume: 0.52 },
+    audio: { type: 'lagoon', volume: 0.26 },
     singleSounds: [
-      { name: 'Deep Ping', frequency: 523.25, type: 'chime', intervalMin: 30, intervalMax: 70 }
+      { name: 'Cave Drop', frequency: 261.63, type: 'bell', intervalMin: 65, intervalMax: 130 }
     ],
     clickAreas: [
-      { id: 'ca-luke-1', targetRoomId: 'sternwarte', x: 20, y: 15, width: 20, height: 40, label: 'Blick hinauf zum Fernrohr-Okular' },
-      { id: 'ca-luke-2', targetRoomId: 'sandstrand', x: 60, y: 60, width: 25, height: 30, label: 'Die Luke nach oben zum Strand öffnen' }
+      { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 18, y: 14, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },
+      { id: 'ca-lagune-2', targetRoomId: 'sandstrand', x: 58, y: 60, width: 26, height: 26, label: 'Über den warmen Fels zurück zum Strand' }
     ],
-    transitionType: 'detailzoom',
-    movementIntensity: 'sehr_gering',
-    colorTemperature: '#021016',
+    transitionType: 'wasserreflexion',
+    movementIntensity: 'gering',
+    colorTemperature: '#08242D',
     hasAblageGeste: false
   }
 ];
@@ -258,8 +283,8 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
         background: 'radial-gradient(circle at 40% 50%, #2e2318 0%, #1c150e 60%, #0a0705 100%)',
         overlayEffect: 'leaves'
       },
-      audio: { type: 'rain', volume: 0.4 },
-      singleSounds: [{ name: 'Bamboo Chime', frequency: 700, type: 'bell', intervalMin: 20, intervalMax: 45 }],
+      audio: { type: 'teahouse', volume: 0.22 },
+      singleSounds: [{ name: 'Bamboo Chime', frequency: 659.25, type: 'bell', intervalMin: 40, intervalMax: 90 }],
       clickAreas: [
         { id: 'ca-tee-1', targetRoomId: 'stiller-innenhof', x: 10, y: 30, width: 25, height: 50, label: 'Steinpfad zum Innenhof' },
         { id: 'ca-tee-2', targetRoomId: 'wintergarten', x: 70, y: 25, width: 20, height: 45, label: 'Blick in den Wintergarten' }
@@ -289,8 +314,8 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
         background: 'radial-gradient(circle at 50% 70%, #3b1d11 0%, #1f0d06 60%, #0a0301 100%)',
         overlayEffect: 'fire'
       },
-      audio: { type: 'library', volume: 0.6 },
-      singleSounds: [{ name: 'Ember Crackle', frequency: 800, type: 'triangle', intervalMin: 15, intervalMax: 35 }],
+      audio: { type: 'hearth', volume: 0.26 },
+      singleSounds: [{ name: 'Ember Crackle', frequency: 587.33, type: 'triangle', intervalMin: 26, intervalMax: 65 }],
       clickAreas: [
         { id: 'ca-kamin-1', targetRoomId: 'bibliothek-nacht', x: 20, y: 20, width: 30, height: 50, label: 'Durchgang zur Bibliothek' },
         { id: 'ca-kamin-2', targetRoomId: 'fensterplatz-regen', x: 75, y: 30, width: 20, height: 40, label: 'Ein hohes, verregnetes Fenster' }

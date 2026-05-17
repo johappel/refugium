@@ -83,6 +83,12 @@ interface RoomSoundProfile {
   layers: ((ctx: AudioContext, masterGain: GainNode) => SoundLayer)[];
 }
 
+const AMBIENT_GAIN_COMPENSATION = 2.4;
+
+function normalizeAmbientGain(level: number): number {
+  return Math.min(1, Math.max(0.003, level * AMBIENT_GAIN_COMPENSATION));
+}
+
 function createLFOChain(
   ctx: AudioContext,
   targetParam: AudioParam,
@@ -253,6 +259,22 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
     ],
   },
 
+  archive: {
+    layers: [
+      // Deep room mass — wood, shelves, stone floor
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 110, 0.16, 0.05, { rate: 0.02, depth: 12, target: 'frequency' }),
+      // Glassware and cabinets breathing softly in a large room
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'bandpass', 520, 1.1, 0.03, { rate: 0.045, depth: 40, target: 'frequency' }),
+      // Fine high air — dust, labels, old chemistry instruments
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 2100, 0.35, 0.008, { rate: 0.05, depth: 100, target: 'frequency' }),
+      // A warm, low institutional hum to make the room feel larger
+      (ctx, m) => createWarmDrone(ctx, m, 92, 0.018, 0.015, 2.5),
+    ],
+  },
+
   library: {
     layers: [
       // Very deep room tone — old wood, thick walls
@@ -283,26 +305,26 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
 
   train: {
     layers: [
-      // Deep rail rumble
+      // Deep, upholstered rail rumble felt through the compartment
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'brown', 'lowpass', 100, 0.3, 0.2, { rate: 0.12, depth: 25, target: 'frequency' }),
-      // Mid rattle — wagon vibration
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 90, 0.28, 0.12, { rate: 0.1, depth: 20, target: 'frequency' }),
+      // Soft cabin vibration in the window frame and wall paneling
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'pink', 'lowpass', 350, 0.5, 0.08, { rate: 0.18, depth: 80, target: 'frequency' }),
-      // High steel-on-steel, wind on train body
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 290, 0.45, 0.045, { rate: 0.12, depth: 45, target: 'frequency' }),
+      // Distant air slip outside the window, deliberately muted
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'blue', 'lowpass', 1800, 0.25, 0.03),
-      // Rhythmic clack — amplitude-modulated low sine
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 1300, 0.2, 0.012),
+      // Rhythmic rail joint, softened by the compartment interior
       (ctx, m) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         const modOsc = ctx.createOscillator();
         const modGain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(75, ctx.currentTime);
-        gain.gain.setValueAtTime(0.04, ctx.currentTime);
-        modOsc.frequency.setValueAtTime(1.1, ctx.currentTime);
-        modGain.gain.setValueAtTime(0.03, ctx.currentTime);
+        osc.frequency.setValueAtTime(72, ctx.currentTime);
+        gain.gain.setValueAtTime(0.02, ctx.currentTime);
+        modOsc.frequency.setValueAtTime(0.82, ctx.currentTime);
+        modGain.gain.setValueAtTime(0.016, ctx.currentTime);
         modOsc.connect(modGain);
         modGain.connect(gain.gain);
         osc.connect(gain);
@@ -326,6 +348,21 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
     ],
   },
 
+  observatory: {
+    layers: [
+      // Soft dome resonance: more architecture than cosmos
+      (ctx, m) => createDronePair(ctx, m, 54, 54.18, 0.032, 0.018, 2),
+      // Cool outside air slipping through the opening
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 140, 0.18, 0.022, { rate: 0.03, depth: 18, target: 'frequency' }),
+      // Very faint high shimmer from distant stars and metal edges
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'bandpass', 1700, 1.2, 0.006, { rate: 0.025, depth: 80, target: 'frequency' }),
+      // Room-sized breath in the masonry
+      (ctx, m) => createWarmDrone(ctx, m, 86, 0.012, 0.02, 1.8),
+    ],
+  },
+
   water: {
     layers: [
       // Gentle flowing water
@@ -337,6 +374,36 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
       // Subtle mist hum
       (ctx, m) =>
         createNoiseSource(ctx, m, 'pink', 'lowpass', 500, 0.4, 0.06),
+    ],
+  },
+
+  courtyard: {
+    layers: [
+      // Stone bowl and enclosed air
+      (ctx, m) => createWarmDrone(ctx, m, 138, 0.012, 0.018, 1.5),
+      // Thin, dark water trickle over stone
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'bandpass', 240, 1.0, 0.045, { rate: 0.05, depth: 35, target: 'frequency' }),
+      // Occasional brighter edge in the water surface
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'violet', 'bandpass', 1300, 1.8, 0.009, { rate: 0.08, depth: 90, target: 'frequency' }),
+      // A tiny veil of open night air above the courtyard
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 380, 0.3, 0.012),
+    ],
+  },
+
+  shoreline: {
+    layers: [
+      // Low, slow water mass under the mist
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 130, 0.22, 0.07, { rate: 0.04, depth: 26, target: 'frequency' }),
+      // Soft lapping against stone and reeds
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'bandpass', 360, 0.8, 0.028, { rate: 0.05, depth: 55, target: 'frequency' }),
+      // Almost-hidden mist texture
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 1400, 0.45, 0.006),
     ],
   },
 
@@ -385,6 +452,54 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
     ]
   },
 
+  lagoon: {
+    layers: [
+      // Sheltered cove wash against stone
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'bandpass', 220, 0.7, 0.08, { rate: 0.05, depth: 45, target: 'frequency' }),
+      // Soft turquoise surface shimmer and cave reflections
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 520, 0.5, 0.035, { rate: 0.06, depth: 110, target: 'frequency' }),
+      // Fine bright edge where light touches moving water
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'bandpass', 1800, 1.4, 0.01, { rate: 0.09, depth: 180, target: 'frequency' }),
+      // A gentle resonant cave bed underneath the water
+      (ctx, m) => createWarmDrone(ctx, m, 124, 0.018, 0.02, 2.2),
+    ],
+  },
+
+  teahouse: {
+    layers: [
+      // Warm kettle and enclosed tatami hush
+      (ctx, m) => createWarmDrone(ctx, m, 156, 0.018, 0.015, 1.7),
+      // Rain and wind softened by paper screens
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 520, 0.4, 0.022, { rate: 0.05, depth: 42, target: 'frequency' }),
+      // Bamboo and timber creak at the edges
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'bandpass', 260, 0.9, 0.016, { rate: 0.035, depth: 28, target: 'frequency' }),
+      // Delicate steam shimmer
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 2200, 0.25, 0.004),
+    ],
+  },
+
+  hearth: {
+    layers: [
+      // Room warmth sitting low in the wood and stone
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 150, 0.22, 0.06, { rate: 0.03, depth: 20, target: 'frequency' }),
+      // Ember bed and small shifting logs
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'bandpass', 780, 0.9, 0.028, { rate: 0.06, depth: 90, target: 'frequency' }),
+      // Tiny high sparks and dry crackle
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'violet', 'bandpass', 2400, 2.1, 0.01, { rate: 0.1, depth: 180, target: 'frequency' }),
+      // A slow warm body underneath the fire
+      (ctx, m) => createWarmDrone(ctx, m, 92, 0.014, 0.018, 1.6),
+    ],
+  },
+
   submarine: {
     layers: [
       // Deep hull resonance drone (detuned sines)
@@ -424,6 +539,21 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
       // Barely-there room tone — just enough to break absolute silence
       (ctx, m) =>
         createNoiseSource(ctx, m, 'brown', 'lowpass', 80, 0.08, 0.02),
+    ],
+  },
+
+  cathedral: {
+    layers: [
+      // Long stone volume in the nave
+      (ctx, m) => createDronePair(ctx, m, 65, 65.18, 0.06, 0.016, 4.5),
+      // Warm low resonance held in old walls and benches
+      (ctx, m) => createWarmDrone(ctx, m, 98, 0.025, 0.02, 2.6),
+      // Slow filtered air to imply height and distance
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'pink', 'bandpass', 420, 0.45, 0.024, { rate: 0.025, depth: 55, target: 'frequency' }),
+      // Candle and dust shimmer in high space
+      (ctx, m) =>
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 2400, 0.25, 0.006),
     ],
   },
 };
@@ -593,13 +723,13 @@ class AudioService {
     }
 
     const roomGain = this.ctx.createGain();
-    roomGain.gain.setValueAtTime(startVol, this.ctx.currentTime);
+    roomGain.gain.setValueAtTime(normalizeAmbientGain(startVol), this.ctx.currentTime);
     roomGain.connect(this.masterGain);
 
     const layers = profile.layers.map((layerFn) => layerFn(this.ctx!, roomGain));
 
     if (targetVol !== null && fadeSeconds > 0) {
-      roomGain.gain.linearRampToValueAtTime(targetVol, this.ctx.currentTime + fadeSeconds);
+      roomGain.gain.linearRampToValueAtTime(normalizeAmbientGain(targetVol), this.ctx.currentTime + fadeSeconds);
     }
 
     return { layers, gainNode: roomGain, config };

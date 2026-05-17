@@ -41,23 +41,29 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate }) => {
       scheduleMicroEvent(18000, 'Ein einzelner, schwerer Tropfen rinnt langsam das Fenster hinab.');
       scheduleMicroEvent(42000, 'In der Ferne spiegelt sich das Scheinwerferlicht eines einsamen Wagens.');
     } else if (room.id === 'bibliothek-nacht') {
-      scheduleMicroEvent(22000, 'Ein leises Knarren im Gebälk. Das alte Holz dehnt sich in der Nacht.');
-      scheduleMicroEvent(50000, 'Der schwache Geruch von Bienenwachs und getrockneten Lavendelblüten zieht vorbei.');
+      scheduleMicroEvent(22000, 'Ein Glasgefäß fängt das warme Licht und gibt es stumpf an die Regale zurück.');
+      scheduleMicroEvent(50000, 'Ein Hauch von Kräutern, Staub und altem Papier bleibt in der Luft stehen.');
     } else if (room.id === 'wintergarten') {
       scheduleMicroEvent(16000, 'Ein großes Farnblatt neigt sich unter dem eigenen Gewicht minimal nach unten.');
       scheduleMicroEvent(38000, 'Ein kühler Luftzug streift die beschlagene Scheibe.');
     } else if (room.id === 'nachtzug') {
-      scheduleMicroEvent(20000, 'Ein verlassener Bahnübergang huscht als verschwommener Lichtblitz vorüber.');
-      scheduleMicroEvent(45000, 'Das rhythmische Klicken der Schienenstäbe wechselt kurz den Takt.');
+      scheduleMicroEvent(20000, 'Hinter dem dunklen Fenster zieht eine Baumreihe als weicher Schatten vorbei.');
+      scheduleMicroEvent(45000, 'Ein fernes Signallicht gleitet kurz wie ein warmer Strich über die Scheibe.');
     } else if (room.id === 'sternwarte') {
-      scheduleMicroEvent(15000, 'Eine winzige Sternschnuppe zieht eine feine, stumme Bahn durch das Schwarz.');
+      scheduleMicroEvent(15000, 'Ein einzelner Stern wird für einen Atemzug heller und sinkt dann wieder in die Ruhe zurück.');
       scheduleMicroEvent(35000, 'Die kühle Nachtluft trägt den Duft von taufrischem Gras herauf.');
     } else if (room.id === 'ufer-nebel') {
-      scheduleMicroEvent(25000, 'Ein Fisch durchbricht lautlos die Wasseroberfläche und hinterlässt sanfte Ringe.');
-      scheduleMicroEvent(55000, 'Der Nebel teilt sich für einen kurzen Moment und gibt den Blick auf Schilf frei.');
+      scheduleMicroEvent(25000, 'Zwischen Wasser und Schilf zeichnet sich kurz der Bogen eines alten Stegs ab.');
+      scheduleMicroEvent(55000, 'Der Nebel hebt sich für einen Herzschlag und lässt das gegenüberliegende Ufer ahnen.');
     } else if (room.id === 'stiller-innenhof') {
-      scheduleMicroEvent(20000, 'Eine kleine Feder schwebt vom Dachgesims herab und landet auf dem feuchten Stein.');
-      scheduleMicroEvent(48000, 'Das Wasser im Brunnenbecken fängt einen fernen Sternenreflex ein.');
+      scheduleMicroEvent(20000, 'Im Brunnen sammelt sich ein ruhiger Kreis aus Licht und Wasser.');
+      scheduleMicroEvent(48000, 'Ein Tropfen löst sich vom Steinrand und verliert sich im dunklen Becken.');
+    } else if (room.id === 'leere-kirche') {
+      scheduleMicroEvent(24000, 'Eine Kerzenflamme richtet sich auf und macht die Stille noch größer.');
+      scheduleMicroEvent(52000, 'Vom Gewölbe sinkt langsam ein Staubkorn durch den goldenen Lichtkegel.');
+    } else if (room.id === 'blaue-lagune') {
+      scheduleMicroEvent(18000, 'Das Wasser unter dem Felsbogen leuchtet auf, als würde es von innen atmen.');
+      scheduleMicroEvent(47000, 'Ein einzelner Tropfen fällt von der Höhle herab und zieht einen weiten Ring.');
     }
 
     return () => {
