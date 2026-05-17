@@ -253,7 +253,7 @@ export const INITIAL_ROOMS: Room[] = [
     },
     audio: { type: 'lagoon', volume: 0.26 },
     singleSounds: [
-      { name: 'Cave Drop', frequency: 523.25, type: 'drip', intervalMin: 18, intervalMax: 42 }
+      { name: 'Cave Drop', frequency: 523.25, type: 'drip', intervalMin: 5, intervalMax: 10 }
     ],
     clickAreas: [
       { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 18, y: 14, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },

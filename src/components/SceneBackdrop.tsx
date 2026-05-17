@@ -19,8 +19,8 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
         }
       : room.id === 'blaue-lagune' && room.visual.overlayEffect === 'water'
         ? {
-            maskImage: 'radial-gradient(ellipse at 60% 70%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 14%, rgba(0,0,0,0.8) 28%, rgba(0,0,0,0.34) 42%, rgba(0,0,0,0.08) 52%, rgba(0,0,0,0) 60%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at 60% 70%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 14%, rgba(0,0,0,0.8) 28%, rgba(0,0,0,0.34) 42%, rgba(0,0,0,0.08) 52%, rgba(0,0,0,0) 60%)'
+            maskImage: 'radial-gradient(ellipse at 18% 42%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 18%, rgba(0,0,0,0.78) 34%, rgba(0,0,0,0.26) 50%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0) 72%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 18% 42%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 18%, rgba(0,0,0,0.78) 34%, rgba(0,0,0,0.26) 50%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0) 72%)'
           }
       : undefined;
   const overlayWrapperStyle: React.CSSProperties =
@@ -33,6 +33,14 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
           overflow: 'hidden',
           borderRadius: '1.8rem'
         }
+      : room.id === 'blaue-lagune' && room.visual.overlayEffect === 'water'
+        ? {
+            top: '48%',
+            left: '50%',
+            width: '38%',
+            height: '24%',
+            overflow: 'hidden'
+          }
       : { inset: 0 };
 
   const bgStyle = hasImage

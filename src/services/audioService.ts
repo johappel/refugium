@@ -11,9 +11,9 @@ import { AmbientAudioConfig, SingleSoundConfig } from '../types/refugium';
 function fillBrownNoise(data: Float32Array): void {
   let lastOut = 0;
   for (let i = 0; i < data.length; i++) {
-    const white = Math.random() * 2 - 1;
-    lastOut = (lastOut + 0.02 * white) / 1.02;
-    data[i] = lastOut * 3.5;
+    const white = Math.random() * 10 - 1;
+    lastOut = (lastOut + 0.02 * white) / 1.52;
+    data[i] = lastOut * 33.5;
   }
 }
 
@@ -455,17 +455,17 @@ const ROOM_PROFILES: Record<string, RoomSoundProfile> = {
 
   lagoon: {
     layers: [
-      // Sheltered cove wash against stone
+      // Main cove body that slowly swells and settles
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'brown', 'bandpass', 220, 0.7, 0.08, { rate: 0.05, depth: 45, target: 'frequency' }),
-      // Soft turquoise surface shimmer and cave reflections
+        createNoiseSource(ctx, m, 'brown', 'lowpass', 150, 0.28, 0.03, { rate: 0.055, depth: 0.016, target: 'gain' }),
+      // Softer outer-lip movement with its own slower swell
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'pink', 'lowpass', 520, 0.5, 0.035, { rate: 0.06, depth: 110, target: 'frequency' }),
-      // Fine bright edge where light touches moving water
+        createNoiseSource(ctx, m, 'pink', 'lowpass', 380, 0.5, 0.013, { rate: 0.082, depth: 0.007, target: 'gain' }),
+      // A faint moving edge of light on the water, kept very low to avoid hiss
       (ctx, m) =>
-        createNoiseSource(ctx, m, 'blue', 'bandpass', 1800, 1.4, 0.01, { rate: 0.09, depth: 180, target: 'frequency' }),
+        createNoiseSource(ctx, m, 'blue', 'lowpass', 760, 0.2, 0.0018, { rate: 0.03, depth: 24, target: 'frequency' }),
       // A gentle resonant cave bed underneath the water
-      (ctx, m) => createWarmDrone(ctx, m, 124, 0.018, 0.02, 2.2),
+      (ctx, m) => createWarmDrone(ctx, m, 124, 0.01, 0.012, 2.2),
     ],
   },
 
@@ -788,7 +788,17 @@ class AudioService {
         }, delay);
         this.singleSoundTimers.push(timerId);
       };
-      scheduleNext();
+
+      const initialDelay =
+        conf.type === 'drip'
+          ? 1200 + Math.random() * 2200
+          : (Math.random() * (conf.intervalMax - conf.intervalMin) + conf.intervalMin) * 1000;
+
+      const initialTimerId = window.setTimeout(() => {
+        this.playSingleTone(conf);
+        scheduleNext();
+      }, initialDelay);
+      this.singleSoundTimers.push(initialTimerId);
     });
   }
 
@@ -903,21 +913,27 @@ class AudioService {
     const source = this.ctx.createBufferSource();
     const filter = this.ctx.createBiquadFilter();
     const gain = this.ctx.createGain();
+    const startOffset = Math.min(0.08, Math.max(0, buffer.duration - 0.25));
+    const clipDuration = Math.min(2.2, Math.max(1.45, buffer.duration - startOffset));
 
     source.buffer = buffer;
-    source.playbackRate.setValueAtTime(0.92 + Math.random() * 0.16, now);
+    source.playbackRate.setValueAtTime(0.96 + Math.random() * 0.08, now);
 
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2600, now);
+    filter.frequency.setValueAtTime(2400, now);
     filter.Q.setValueAtTime(0.4, now);
 
-    gain.gain.setValueAtTime(0.075, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.05, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.018, now + Math.max(0.45, clipDuration * 0.55));
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + clipDuration);
 
     source.connect(filter);
     filter.connect(gain);
     gain.connect(this.masterGain);
 
-    source.start(now);
+    source.start(now, startOffset, clipDuration);
+    source.stop(now + clipDuration + 0.08);
     source.onended = () => {
       try {
         source.disconnect();

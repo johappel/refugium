@@ -68,12 +68,17 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     if (!ctx) return;
 
     let animationId: number;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = 0;
+    let height = 0;
+
+    const measureCanvas = () => {
+      const bounds = canvas.parentElement?.getBoundingClientRect() ?? canvas.getBoundingClientRect();
+      width = Math.max(1, Math.round(bounds.width));
+      height = Math.max(1, Math.round(bounds.height));
+    };
 
     const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
+      measureCanvas();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -86,7 +91,15 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     resize();
     window.addEventListener('resize', resize);
 
-    const initParticles = () => {
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+      particlesRef.current = initParticles();
+    });
+    if (canvas.parentElement) {
+      resizeObserver.observe(canvas.parentElement);
+    }
+    const initParticles = (): Particle[] => {
       const particles: Particle[] = [];
 
       if (effect === 'rain') {
@@ -176,11 +189,11 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           particles.push({
             kind: 'ripple',
             x: Math.random() * width,
-            y: height * (0.58 + Math.random() * 0.37),
+            y: height * (0.18 + Math.random() * 0.52),
             vx: 0,
             vy: 0,
-            size: 10 + Math.random() * 24,
-            opacity: 0.12 + Math.random() * 0.18,
+            size: 14 + Math.random() * 30,
+            opacity: 0.16 + Math.random() * 0.22,
             life: Math.random() * 180,
             maxLife: 180 + Math.random() * 120,
             phase: Math.random() * Math.PI * 2,
@@ -427,10 +440,10 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
         }
       }
 
-      particlesRef.current = particles;
+      return particles;
     };
 
-    initParticles();
+    particlesRef.current = initParticles();
 
     // ============================================================
     //  REGEN
@@ -537,14 +550,14 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
 
     const drawRipple = (p: Particle) => {
       const t = p.life / p.maxLife;
-      const r = p.size + t * 28;
+      const r = p.size + t * 24;
       const op = p.opacity * (1 - t);
       if (op <= 0.01) return;
 
-      ctx.strokeStyle = `rgba(185, 220, 245, ${op})`;
-      ctx.lineWidth = 1.1;
+      ctx.strokeStyle = `rgba(190, 228, 248, ${op})`;
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.ellipse(p.x, p.y, r * 1.5, r * 0.42, 0, 0, Math.PI * 2);
+      ctx.ellipse(p.x, p.y, r * 1.35, r * 0.4, 0, 0, Math.PI * 2);
       ctx.stroke();
     };
 
@@ -1162,9 +1175,9 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
               p.life = 0;
               p.maxLife = 180 + Math.random() * 120;
               p.x = Math.random() * width;
-              p.y = height * (0.58 + Math.random() * 0.37);
-              p.size = 10 + Math.random() * 24;
-              p.opacity = 0.12 + Math.random() * 0.18;
+              p.y = height * (0.18 + Math.random() * 0.52);
+              p.size = 14 + Math.random() * 30;
+              p.opacity = 0.16 + Math.random() * 0.22;
             }
             break;
           }
@@ -1290,6 +1303,7 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
+      resizeObserver.disconnect();
     };
   }, [effect, intensity]);
 
@@ -1297,7 +1311,7 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 pointer-events-none ${className}`}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100%', height: '100%' }}
     />
   );
 };
