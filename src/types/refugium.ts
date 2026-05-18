@@ -55,6 +55,8 @@ export interface Room {
   name: string;
   emotionalWord: string;
   thought: string;
+  giftPopoverTitle?: string;
+  giftPopoverText?: string;
   visual: {
     type: 'css-ambient' | 'image' | 'video';
     background: string; // CSS Gradient, Image URL oder Video URL

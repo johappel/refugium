@@ -72,12 +72,13 @@ function fillBlueNoise(data: Float32Array): void {
 // Sound Layer Builder
 // ============================================================
 
-type SourceNode = AudioBufferSourceNode | OscillatorNode;
+type SourceNode = AudioBufferSourceNode | OscillatorNode | MediaElementAudioSourceNode;
 
 interface SoundLayer {
   source: SourceNode;
   nodes: AudioNode[];
   kind?: 'ambient-sample';
+  mediaElement?: HTMLAudioElement;
 }
 
 interface RoomSoundProfile {
@@ -728,6 +729,11 @@ class AudioService {
   ): Promise<void> {
     if (!this.ctx || room.destroyed) return;
 
+    if (window.location.protocol === 'file:') {
+      this.attachAmbientMediaElementLayer(room, sample);
+      return;
+    }
+
     const buffer = await this.loadSoundEffectBuffer(sample.url);
     if (!buffer || !this.ctx || room.destroyed) return;
 
@@ -783,6 +789,129 @@ class AudioService {
     startSample();
   }
 
+  private attachAmbientMediaElementLayer(
+    room: ActiveRoom,
+    sample: NonNullable<AmbientAudioConfig['sampleLayer']>
+  ): void {
+    if (!this.ctx || room.destroyed) return;
+
+    const startDelay = sample.startDelay ?? 0;
+    const startOffset = Math.max(0, sample.startOffset ?? 0);
+    const fadeInSeconds = sample.fadeInSeconds ?? 4;
+    const targetGain = Math.max(0.0001, sample.volume);
+    const targetRoomGain = normalizeAmbientGain(room.config.volume * (sample.roomGainMultiplier ?? 1));
+
+    const startSample = () => {
+      if (!this.ctx || room.destroyed) return;
+
+      const now = this.ctx.currentTime;
+      const mediaElement = new Audio(sample.url);
+      const source = this.ctx.createMediaElementSource(mediaElement);
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      mediaElement.preload = 'auto';
+      mediaElement.loop = sample.loop ?? true;
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(sample.lowpass ?? 600, now);
+      filter.Q.setValueAtTime(0.3, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(targetGain, now + fadeInSeconds);
+
+      if ((sample.roomGainMultiplier ?? 1) !== 1) {
+        room.gainNode.gain.cancelScheduledValues(now);
+        room.gainNode.gain.setValueAtTime(Math.max(room.gainNode.gain.value, 0.001), now);
+        room.gainNode.gain.linearRampToValueAtTime(targetRoomGain, now + Math.min(1.2, fadeInSeconds));
+      }
+
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(room.gainNode);
+
+      const playMedia = () => {
+        if (room.destroyed) return;
+
+        const playPromise = mediaElement.play();
+        if (playPromise) {
+          void playPromise.catch((error) => {
+            console.warn('Fehler beim Abspielen des Ambient-Medienelements', error);
+          });
+        }
+      };
+
+      if (startOffset > 0) {
+        const seekToOffset = () => {
+          try {
+            mediaElement.currentTime = Math.min(
+              startOffset,
+              Math.max(0, mediaElement.duration - 0.05)
+            );
+          } catch {
+            /* currentTime may not be seekable yet */
+          }
+          playMedia();
+        };
+
+        if (mediaElement.readyState >= 1) {
+          seekToOffset();
+        } else {
+          mediaElement.addEventListener('loadedmetadata', seekToOffset, { once: true });
+        }
+      } else {
+        playMedia();
+      }
+
+      room.layers.push({
+        source,
+        nodes: [source, filter, gain],
+        kind: 'ambient-sample',
+        mediaElement
+      });
+    };
+
+    if (startDelay > 0) {
+      const timerId = window.setTimeout(() => {
+        room.pendingTimers = room.pendingTimers?.filter((id) => id !== timerId) ?? [];
+        startSample();
+      }, startDelay * 1000);
+      room.pendingTimers?.push(timerId);
+      return;
+    }
+
+    startSample();
+  }
+
+  private stopLayer(layer: SoundLayer, when?: number): void {
+    if (layer.mediaElement) {
+      const stopMedia = () => {
+        try {
+          layer.mediaElement?.pause();
+          if (layer.mediaElement) {
+            layer.mediaElement.currentTime = 0;
+          }
+        } catch {
+          /* already stopped */
+        }
+      };
+
+      if (typeof when === 'number' && this.ctx) {
+        const delayMs = Math.max(0, (when - this.ctx.currentTime) * 1000);
+        window.setTimeout(stopMedia, delayMs);
+      } else {
+        stopMedia();
+      }
+      return;
+    }
+
+    try {
+      (layer.source as AudioBufferSourceNode | OscillatorNode).stop(when);
+    } catch {
+      /* already stopped */
+    }
+  }
+
   private fadeOutAmbientSamples(room: ActiveRoom, duration = 0.8): void {
     if (!this.ctx) return;
 
@@ -797,11 +926,7 @@ class AudioService {
         gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
       }
 
-      try {
-        layer.source.stop(now + duration + 0.05);
-      } catch {
-        /* already stopped */
-      }
+      this.stopLayer(layer, now + duration + 0.05);
     });
   }
 
@@ -826,11 +951,7 @@ class AudioService {
     room.pendingTimers?.forEach((timerId) => clearTimeout(timerId));
     room.pendingTimers = [];
     room.layers.forEach((layer) => {
-      try {
-        layer.source.stop();
-      } catch {
-        /* already stopped */
-      }
+      this.stopLayer(layer);
       layer.nodes.forEach((node) => {
         try {
           node.disconnect();

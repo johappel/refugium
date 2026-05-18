@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "download:miniserve": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\download-miniserve.ps1",
+    "package:portable": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\package-portable.ps1",
+    "package:portable:binary": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\package-portable.ps1 -IncludeMiniserve"
   },
   "dependencies": {
     "clsx": "2.1.1",

@@ -2,7 +2,7 @@
   "name": "Refugium - Digitale Zuflucht",
   "short_name": "Refugium",
   "description": "Eine kontemplative, nicht-gamifizierte digitale Zuflucht zum Verweilen und zur Ruhe kommen.",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0B0F17",
   "theme_color": "#0B0F17",

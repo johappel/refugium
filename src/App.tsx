@@ -8,7 +8,7 @@ import { RoomView } from './components/RoomView';
 import { TransitionOverlay } from './components/TransitionOverlay';
 import { ArchitectureModal } from './components/ArchitectureModal';
 import { PackageInstaller } from './components/PackageInstaller';
-import { Volume2, VolumeX, BookOpen, Package, Eye } from 'lucide-react';
+import { Volume2, VolumeX, BookOpen, Package, Eye, Gift } from 'lucide-react';
 
 const STORAGE_KEY_LAST_ROOM = 'refugium_last_room_id';
 
@@ -47,6 +47,7 @@ export const App: React.FC = () => {
   const [isArchModalOpen, setIsArchModalOpen] = useState(false);
   const [isPackageInstallerOpen, setIsPackageInstallerOpen] = useState(false);
   const [thoughtReplayTrigger, setThoughtReplayTrigger] = useState(0);
+  const [isGiftPopoverOpen, setIsGiftPopoverOpen] = useState(false);
 
   useEffect(() => {
     const installedRooms = packageService.getInstalledRooms();
@@ -116,6 +117,10 @@ export const App: React.FC = () => {
       audioService.stopAll();
     };
   }, []);
+
+  useEffect(() => {
+    setIsGiftPopoverOpen(false);
+  }, [currentRoom.id]);
 
   const handleEnterRefuge = async () => {
     await audioService.init();
@@ -197,42 +202,72 @@ export const App: React.FC = () => {
       )}
 
       {hasEntered && !activeTransition && (
-        <div className="absolute top-6 right-6 z-40 flex items-center space-x-4 opacity-30 hover:opacity-100 transition-opacity duration-700">
-          <button
-            onClick={handleToggleMute}
-            className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all"
-            title={isMuted ? 'Ton einschalten' : 'Ton stummschalten'}
-          >
-            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-
-          <button
-            onClick={() => setThoughtReplayTrigger((current) => current + 1)}
-            className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all"
-            title="Hauptgedanken erneut zeigen"
-          >
-            <Eye size={16} />
-          </button>
-
-          <button
-            onClick={() => setIsPackageInstallerOpen(true)}
-            className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all relative"
-            title="Erweiterungs-Pakete verwalten"
-          >
-            <Package size={16} />
-            {packageService.getAvailablePackages().length > 0 && (
-              <span className="absolute top-0 right-0 w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+        <div className="absolute top-6 right-6 z-40 flex flex-col items-end gap-3 opacity-30 hover:opacity-100 transition-opacity duration-700">
+          <div className="flex items-center space-x-4">
+            {currentRoom.giftPopoverText && (
+              <button
+                onClick={() => setIsGiftPopoverOpen((current) => !current)}
+                className={`p-2.5 rounded-full backdrop-blur-md border transition-all ${
+                  isGiftPopoverOpen
+                    ? 'bg-amber-200/20 text-amber-100 border-amber-200/30'
+                    : 'bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white border-white/10'
+                }`}
+                title="Besondere Notiz öffnen"
+                aria-pressed={isGiftPopoverOpen}
+              >
+                <Gift size={16} />
+              </button>
             )}
-          </button>
 
-          <button
-            onClick={() => setIsArchModalOpen(true)}
-            className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all flex items-center space-x-2 px-4"
-            title="Konzept & Architektur öffnen"
-          >
-            <BookOpen size={16} />
-            <span className="text-[11px] tracking-widest uppercase font-light hidden md:inline">Konzept</span>
-          </button>
+            <button
+              onClick={handleToggleMute}
+              className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all"
+              title={isMuted ? 'Ton einschalten' : 'Ton stummschalten'}
+            >
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+
+            <button
+              onClick={() => setThoughtReplayTrigger((current) => current + 1)}
+              className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all"
+              title="Hauptgedanken erneut zeigen"
+            >
+              <Eye size={16} />
+            </button>
+            
+            <button
+              onClick={() => setIsPackageInstallerOpen(true)}
+              className="hidden p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all relative"
+              title="Erweiterungs-Pakete verwalten"
+            >
+              <Package size={16} />
+              {packageService.getAvailablePackages().length > 0 && (
+                <span className="absolute top-0 right-0 w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+              )}
+            </button>
+
+            <button 
+              onClick={() => setIsArchModalOpen(true)}
+              className="hidden p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all flex items-center space-x-2 px-4"
+              title="Konzept & Architektur öffnen"
+            >
+              <BookOpen size={16} />
+              <span className="text-[11px] tracking-widest uppercase font-light hidden md:inline">Konzept</span>
+            </button>
+          </div>
+
+          {currentRoom.giftPopoverText && isGiftPopoverOpen && (
+            <div className="max-w-md rounded-[1.75rem] border border-amber-100/15 bg-black/55 px-5 py-4 text-left text-sm leading-relaxed text-gray-100/90 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-md">
+              {currentRoom.giftPopoverTitle && (
+                <h2 className="mb-3 text-xs font-light uppercase tracking-[0.22em] text-amber-100/80">
+                  {currentRoom.giftPopoverTitle}
+                </h2>
+              )}
+              <div className="whitespace-pre-line">
+                {currentRoom.giftPopoverText}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

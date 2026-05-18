@@ -7,8 +7,8 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Refugium - Digitale Zuflucht</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="theme-color" content="#0B0F17" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -23,11 +23,11 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script type="module">
-      if ("serviceWorker" in navigator) {
+      if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
         window.addEventListener("load", async () => {
           if (import.meta.env.PROD) {
             navigator.serviceWorker
-              .register("/sw.js")
+              .register("./sw.js")
               .then((registration) => {
                 console.log("SW registered with scope:", registration.scope);
               })

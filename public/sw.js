@@ -2,12 +2,9 @@ const CACHE_NAME = 'refugium-core-v1';
 const ROOM_PACKAGES_CACHE = 'refugium-packages-v1';
 
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/src/main.tsx',
-  '/src/App.tsx',
-  '/src/index.css'
+  './',
+  './index.html',
+  './manifest.webmanifest'
 ];
 
 // Install Event: Cache Core Assets
@@ -82,7 +79,7 @@ self.addEventListener('fetch', (event) => {
       }).catch(() => {
         // Offline Fallback for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         }
         return new Response('Offline', { status: 503 });
       });
