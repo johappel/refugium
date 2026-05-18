@@ -3,16 +3,25 @@ import { Room, ClickArea } from '../types/refugium';
 import { AblageGeste } from './AblageGeste';
 import { SceneBackdrop } from './SceneBackdrop';
 
-const TEXT_FADE_MS = 1400;
-const INITIAL_THOUGHT_DELAY_MS = 20000;
+const HEADER_FADE_MS = 1400;
+const CENTER_TEXT_FADE_MS = 6000;
+const INITIAL_THOUGHT_DELAY_MS = 10000;
 const INITIAL_THOUGHT_DURATION_MS = 20000;
 const RETURN_THOUGHT_DURATION_MS = 15000;
 const MICRO_EVENT_INTERVAL_MS = 15000;
+const MICRO_EVENT_DELAY_MS = 10000;
+const MICRO_EVENT_VISIBLE_MS = MICRO_EVENT_INTERVAL_MS;
 
 const SHARED_TEXT_PANEL_STYLE = {
   background:
     'radial-gradient(ellipse at center, rgba(7, 11, 16, 0.42) 0%, rgba(7, 11, 16, 0.28) 48%, rgba(7, 11, 16, 0.1) 72%, rgba(7, 11, 16, 0) 100%)',
   boxShadow: '0 16px 42px rgba(0, 0, 0, 0.18)'
+} as const;
+
+const SOFT_MIST_HEADER_PANEL_STYLE = {
+  background:
+    'radial-gradient(ellipse at center, rgba(244, 238, 228, 0.22) 0%, rgba(228, 220, 210, 0.14) 46%, rgba(196, 188, 178, 0.06) 72%, rgba(196, 188, 178, 0) 100%)',
+  boxShadow: '0 14px 34px rgba(48, 36, 24, 0.08)'
 } as const;
 
 const ROOM_MICRO_EVENTS: Record<string, string[]> = {
@@ -60,32 +69,91 @@ interface RoomViewProps {
   thoughtReplayTrigger: number;
 }
 
+type CenterTextKind = 'thought' | 'micro';
+
 export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtReplayTrigger }) => {
+  const headerPanelStyle = room.id === 'ufer-nebel' ? SOFT_MIST_HEADER_PANEL_STYLE : SHARED_TEXT_PANEL_STYLE;
+  const headerTitleShadow =
+    room.id === 'ufer-nebel'
+      ? '0 2px 10px rgba(48, 36, 24, 0.32), 0 8px 22px rgba(48, 36, 24, 0.12)'
+      : '0 2px 10px rgba(0, 0, 0, 0.88), 0 10px 28px rgba(0, 0, 0, 0.42)';
+
   const [canNavigate, setCanNavigate] = useState(false);
   const [microEvent, setMicroEvent] = useState<string | null>(null);
   const [hoveredArea, setHoveredArea] = useState<string | null>(null);
   const [centerTextMode, setCenterTextMode] = useState<'hidden' | 'thought' | 'micro'>('hidden');
   const manualThoughtTimerRef = useRef<number | null>(null);
+  const centerTextClearTimerRef = useRef<number | null>(null);
+  const [renderedCenterText, setRenderedCenterText] = useState<{
+    kind: CenterTextKind;
+    content: string;
+  } | null>(null);
+  const [isCenterTextVisible, setIsCenterTextVisible] = useState(false);
 
-  const showThought = centerTextMode === 'thought';
-  const showMicroEvent = centerTextMode === 'micro' && microEvent !== null;
-  const showCenterText = showThought || showMicroEvent;
+  const showThought = renderedCenterText?.kind === 'thought';
+  const showCenterText = renderedCenterText !== null;
+  const centerTextContent = renderedCenterText?.content ?? null;
 
   useEffect(() => {
     setCanNavigate(false);
     setHoveredArea(null);
     setCenterTextMode('hidden');
     setMicroEvent(null);
+    setRenderedCenterText(null);
+    setIsCenterTextVisible(false);
 
     if (manualThoughtTimerRef.current !== null) {
       clearTimeout(manualThoughtTimerRef.current);
       manualThoughtTimerRef.current = null;
     }
 
+    if (centerTextClearTimerRef.current !== null) {
+      clearTimeout(centerTextClearTimerRef.current);
+      centerTextClearTimerRef.current = null;
+    }
+
     const roomMicroEvents = ROOM_MICRO_EVENTS[room.id] ?? [];
     const sequenceTimers: number[] = [];
     let microEventIndex = 0;
-    let microEventIntervalId: number | null = null;
+    let microEventTimeoutId: number | null = null;
+    let microEventsPaused = false;
+    let isDisposed = false;
+
+    const clearMicroEventTimeout = () => {
+      if (microEventTimeoutId !== null) {
+        clearTimeout(microEventTimeoutId);
+        microEventTimeoutId = null;
+      }
+    };
+
+    const runMicroEventCycle = () => {
+      if (isDisposed || microEventsPaused || roomMicroEvents.length === 0) {
+        return;
+      }
+
+      setCenterTextMode('hidden');
+      setMicroEvent(null);
+
+      microEventTimeoutId = window.setTimeout(() => {
+        if (isDisposed || microEventsPaused) {
+          return;
+        }
+
+        setMicroEvent(roomMicroEvents[microEventIndex]);
+        setCenterTextMode('micro');
+        microEventIndex = (microEventIndex + 1) % roomMicroEvents.length;
+
+        microEventTimeoutId = window.setTimeout(() => {
+          runMicroEventCycle();
+        }, MICRO_EVENT_VISIBLE_MS);
+      }, MICRO_EVENT_DELAY_MS);
+    };
+
+    const pauseMicroEvents = () => {
+      microEventsPaused = true;
+      clearMicroEventTimeout();
+      setMicroEvent(null);
+    };
 
     const startMicroEventCycle = () => {
       if (roomMicroEvents.length === 0) {
@@ -94,23 +162,13 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
         return;
       }
 
-      setMicroEvent(roomMicroEvents[microEventIndex]);
-      setCenterTextMode('micro');
-
-      microEventIntervalId = window.setInterval(() => {
-        microEventIndex = (microEventIndex + 1) % roomMicroEvents.length;
-        setMicroEvent(roomMicroEvents[microEventIndex]);
-        setCenterTextMode('micro');
-      }, MICRO_EVENT_INTERVAL_MS);
+      microEventsPaused = false;
+      runMicroEventCycle();
     };
-
-    const secondThoughtStart =
-      INITIAL_THOUGHT_DELAY_MS +
-      INITIAL_THOUGHT_DURATION_MS +
-      Math.max(roomMicroEvents.length, 1) * MICRO_EVENT_INTERVAL_MS;
 
     sequenceTimers.push(
       window.setTimeout(() => {
+        pauseMicroEvents();
         setCenterTextMode('thought');
       }, INITIAL_THOUGHT_DELAY_MS)
     );
@@ -121,32 +179,15 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       }, INITIAL_THOUGHT_DELAY_MS + INITIAL_THOUGHT_DURATION_MS)
     );
 
-    sequenceTimers.push(
-      window.setTimeout(() => {
-        setCenterTextMode('thought');
-      }, secondThoughtStart)
-    );
-
-    sequenceTimers.push(
-      window.setTimeout(() => {
-        if (roomMicroEvents.length > 0) {
-          setCenterTextMode('micro');
-        } else {
-          setCenterTextMode('hidden');
-        }
-      }, secondThoughtStart + RETURN_THOUGHT_DURATION_MS)
-    );
-
     const timer = window.setTimeout(() => {
       setCanNavigate(true);
     }, 3500);
 
     return () => {
+      isDisposed = true;
       clearTimeout(timer);
       sequenceTimers.forEach((id) => clearTimeout(id));
-      if (microEventIntervalId !== null) {
-        clearInterval(microEventIntervalId);
-      }
+      clearMicroEventTimeout();
     };
   }, [room.id]);
 
@@ -155,8 +196,44 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       if (manualThoughtTimerRef.current !== null) {
         clearTimeout(manualThoughtTimerRef.current);
       }
+
+      if (centerTextClearTimerRef.current !== null) {
+        clearTimeout(centerTextClearTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (centerTextClearTimerRef.current !== null) {
+      clearTimeout(centerTextClearTimerRef.current);
+      centerTextClearTimerRef.current = null;
+    }
+
+    if (centerTextMode === 'thought') {
+      if (renderedCenterText?.kind !== 'thought' || renderedCenterText.content !== room.thought) {
+        setRenderedCenterText({ kind: 'thought', content: room.thought });
+      }
+      setIsCenterTextVisible(true);
+      return;
+    }
+
+    if (centerTextMode === 'micro' && microEvent) {
+      if (renderedCenterText?.kind !== 'micro' || renderedCenterText.content !== microEvent) {
+        setRenderedCenterText({ kind: 'micro', content: microEvent });
+      }
+      setIsCenterTextVisible(true);
+      return;
+    }
+
+    setIsCenterTextVisible(false);
+
+    if (renderedCenterText !== null) {
+      centerTextClearTimerRef.current = window.setTimeout(() => {
+        setRenderedCenterText(null);
+        centerTextClearTimerRef.current = null;
+      }, CENTER_TEXT_FADE_MS);
+    }
+  }, [centerTextMode, microEvent, renderedCenterText, room.thought]);
 
   useEffect(() => {
     if (thoughtReplayTrigger === 0) return;
@@ -213,12 +290,12 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       <div className="relative z-10 pt-16 px-8 md:px-16 flex flex-col items-center pointer-events-none text-center">
         <div
           className="px-6 py-4 md:px-10 md:py-6 rounded-[2rem] backdrop-blur-[2px] border border-white/8"
-          style={SHARED_TEXT_PANEL_STYLE}
+          style={headerPanelStyle}
         >
           <div className="mb-3 flex min-h-[1.5rem] items-center justify-center">
             <span
               className="block text-xs tracking-[0.4em] text-gray-300/78 uppercase font-light font-sans transition-all ease-out opacity-100 translate-y-0"
-              style={{ transitionDuration: `${TEXT_FADE_MS}ms` }}
+              style={{ transitionDuration: `${HEADER_FADE_MS}ms` }}
             >
               {room.emotionalWord}
             </span>
@@ -226,7 +303,7 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
 
           <h1
             className="text-3xl md:text-5xl font-light tracking-wider text-gray-50 font-cinzel"
-            style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.88), 0 10px 28px rgba(0, 0, 0, 0.42)' }}
+            style={{ textShadow: headerTitleShadow }}
           >
             {room.name}
           </h1>
@@ -236,32 +313,32 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       {/* Mittlerer Bereich: Gedanke & Mikro-Ereignisse */}
       <div className="relative z-10 px-8 md:px-24 max-w-3xl mx-auto flex flex-col items-center justify-center pointer-events-none text-center my-auto">
         <div
-          className={`mb-8 w-full max-w-2xl rounded-[2rem] px-6 py-5 md:px-8 md:py-6 backdrop-blur-[2px] border transition-all ease-out ${
-            showCenterText
+          className={`relative mb-8 w-full max-w-2xl min-h-[8.5rem] md:min-h-[10rem] rounded-[2rem] px-6 py-5 md:px-8 md:py-6 backdrop-blur-[2px] border transition-all ease-out ${
+            showCenterText && isCenterTextVisible
               ? 'opacity-100 translate-y-0 border-white/8'
               : 'opacity-0 translate-y-3 border-transparent'
           }`}
           style={{
             ...SHARED_TEXT_PANEL_STYLE,
-            transitionDuration: `${TEXT_FADE_MS}ms`
+            transitionDuration: `${CENTER_TEXT_FADE_MS}ms`
           }}
           aria-hidden={!showCenterText}
         >
-          {showThought && (
+          {centerTextContent && (
             <p
-              className="w-full text-lg md:text-2xl text-gray-100/92 font-spectral italic font-light leading-relaxed tracking-wide text-center"
-              style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.9), 0 8px 24px rgba(0, 0, 0, 0.34)' }}
+              className={`w-full text-center leading-relaxed transition-all ease-out ${
+                showThought
+                  ? 'text-lg md:text-2xl text-gray-100/92 font-spectral italic font-light tracking-wide'
+                  : 'text-sm md:text-base text-gray-200/84 font-sans font-light tracking-[0.06em]'
+              }`}
+              style={{
+                transitionDuration: `${CENTER_TEXT_FADE_MS}ms`,
+                textShadow: showThought
+                  ? '0 2px 10px rgba(0, 0, 0, 0.9), 0 8px 24px rgba(0, 0, 0, 0.34)'
+                  : '0 2px 10px rgba(0, 0, 0, 0.78), 0 8px 24px rgba(0, 0, 0, 0.28)'
+              }}
             >
-              „{room.thought}“
-            </p>
-          )}
-
-          {showMicroEvent && (
-            <p
-              className="w-full text-sm md:text-base text-gray-200/84 font-light leading-relaxed tracking-[0.06em] text-center font-sans"
-              style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.78), 0 8px 24px rgba(0, 0, 0, 0.28)' }}
-            >
-              {microEvent}
+              {showThought ? `„${room.thought}“` : centerTextContent}
             </p>
           )}
         </div>

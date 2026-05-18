@@ -34,7 +34,7 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'bibliothek-nacht',
-    name: 'Bibliothek bei Nacht',
+    name: 'Lesestube',
     emotionalWord: 'Stille',
     thought: 'Draußen darf der Tag weiterfordern. Zwischen Holz, Papier und gedimmtem Licht fällt alles langsam von dir ab. Hier hat jede Frage Zeit, und nichts drängt auf Antwort.',
     visual: {
@@ -56,15 +56,25 @@ export const INITIAL_ROOMS: Room[] = [
   },
   {
     id: 'wintergarten',
-    name: 'Wintergarten',
-    emotionalWord: 'Behutsamkeit',
+    name: 'Alter Botanischer Garten',
+    emotionalWord: 'Langer Atem',
     thought: 'Große Blätter atmen im Halbdunkel. Feuchte Erde und beschlagene Scheiben halten die Welt auf Abstand. Hier wächst nur, was Zeit, Wärme und Ruhe braucht.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 60% 50%, #11251d 0%, #08140e 65%, #020604 100%)',
       overlayEffect: 'leaves'
     },
-    audio: { type: 'wind', volume: 0.05 },
+    audio: {
+      type: 'silence',
+      volume: 1,
+      sampleLayer: {
+        url: '/sound-effects/gewaechshaus.mp3',
+        volume: 0.36,
+        fadeInSeconds: 3,
+        loop: true,
+        lowpass: 2600
+      }
+    },
     singleSounds: [
       { name: 'Wintergarten Chime', frequency: 783.99, type: 'bell', intervalMin: 28, intervalMax: 72 }
     ],
@@ -142,8 +152,8 @@ export const INITIAL_ROOMS: Room[] = [
   {
     id: 'ufer-nebel',
     name: 'Im Nebel',
-    emotionalWord: 'Weite',
-    thought: 'Wasser und Luft verschwimmen zu einem einzigen weichen Grau. Alles Harte bleibt jenseits des Nebels zurück. Am Ufer darf dein Inneres leiser werden.',
+    emotionalWord: 'Unsicherheit und Spannung',
+    thought: 'Wasser und Luft verschwimmen zu einem einzigen weichen Grau. Das neue wird jenseits des Nebels in Konturen sichtbar. Die Brücke lädt dich ein, dich zu nähern.',
     visual: {
       type: 'image',
       background: 'linear-gradient(180deg, #2d3748 0%, #1a202c 55%, #0f172a 100%)',

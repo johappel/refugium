@@ -1,11 +1,11 @@
 import fensterplatzRegen from '../assets/Fensterplatz-am-Regen.png';
 import bibliothekNacht from '../assets/bibliothek-nacht.png';
-import wintergarten from '../assets/wintergarten.jpg';
+import wintergarten from '../assets/gewaechshaus.png';
 
 const blaueLagune = '/images/grotte-lagune.png';
 const nachtzug = '/images/Nachtzug.png';
-const sandstrand = '/images/sandstrand.png';
-const hain = '/images/hein.png';
+const sandstrand = '/images/strand-panorama.png';
+const hain = '/images/hain.png';
 const nebel = '/images/Nebel.png';
 const brunnen = '/images/Brunnen.png';
 const kirche = '/images/kirche.png';

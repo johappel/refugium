@@ -132,6 +132,30 @@
   }
 }
 
+@keyframes reedSway {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-2.4deg) scaleY(1);
+  }
+  50% {
+    transform: translate3d(2%, -1%, 0) rotate(3deg) scaleY(1.01);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2.4deg) scaleY(1);
+  }
+}
+
+@keyframes reedSwayReverse {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(2.2deg) scaleY(1);
+  }
+  50% {
+    transform: translate3d(-2%, -1%, 0) rotate(-2.8deg) scaleY(1.01);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(2.2deg) scaleY(1);
+  }
+}
+
 .animate-rain {
   animation: rain linear infinite;
 }
@@ -156,9 +180,40 @@
   animation: fadeInOut 7s ease-in-out forwards;
 }
 
+@keyframes sandstrandPan {
+  0% {
+    background-position: 5% 50%;
+  }
+  50% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 95% 50%;
+  }
+}
+
+@keyframes hainPanOnce {
+  0% {
+    transform: translate3d(5.5%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-10.5%, 0, 0);
+  }
+}
+
 .animate-torch-flicker {
   animation: torchFlicker 5.2s ease-in-out infinite;
   will-change: transform, opacity, filter;
+}
+
+.animate-sandstrand-pan {
+  animation: sandstrandPan 110s ease-in-out infinite alternate;
+  will-change: background-position;
+}
+
+.animate-hain-pan-once {
+  animation: hainPanOnce 42s ease-out forwards;
+  will-change: transform;
 }
 
 .animate-train-horizon-slow {
@@ -175,4 +230,14 @@
   animation: trainCarSway 5.8s ease-in-out infinite;
   will-change: transform;
   transform-origin: 50% 50%;
+}
+
+.animate-reed-sway {
+  animation: reedSway 9.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-reed-sway-reverse {
+  animation: reedSwayReverse 9.2s ease-in-out infinite;
+  will-change: transform;
 }

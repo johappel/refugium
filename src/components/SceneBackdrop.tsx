@@ -95,8 +95,8 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
   const bgStyle = hasImage
     ? {
         backgroundImage: `url(${imageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundSize: room.id === 'sandstrand' || room.id === 'hain' ? 'auto 100%' : 'cover',
+        backgroundPosition: room.id === 'sandstrand' ? '5% center' : 'center',
         backgroundRepeat: 'no-repeat' as const,
         backgroundColor: room.colorTemperature
       }
@@ -108,6 +108,10 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
   const backgroundLayerClassName =
     room.id === 'nachtzug' && room.visual.overlayEffect === 'train-lights'
       ? 'absolute -inset-[2.5%] animate-train-car-sway'
+      : room.id === 'sandstrand' && room.visual.overlayEffect === 'waves'
+        ? 'absolute inset-0 animate-sandstrand-pan'
+      : room.id === 'hain' && room.visual.overlayEffect === 'rays'
+        ? 'absolute inset-y-0 -left-[14%] -right-[14%] animate-hain-pan-once'
       : 'absolute inset-0';
 
   const renderExtraVisualLayers = () => {
@@ -148,6 +152,48 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_16%,rgba(255,224,176,0.24),transparent_24%),radial-gradient(circle_at_22%_28%,rgba(196,210,224,0.12),transparent_32%),radial-gradient(circle_at_62%_34%,rgba(224,148,138,0.16),transparent_32%)]" />
             <div className="absolute left-[58%] top-[8%] h-[32%] w-[24%] rounded-full bg-[radial-gradient(circle,rgba(255,230,186,0.2),transparent_74%)] blur-3xl" />
             <div className="absolute inset-x-[18%] top-[20%] h-[26%] bg-[radial-gradient(ellipse_at_50%_50%,rgba(212,134,126,0.12),transparent_72%)] blur-3xl" />
+            <div className="absolute left-[4%] -bottom-[7%] h-[50%] w-[24%] pointer-events-none opacity-78">
+              <div className="absolute inset-x-[4%] bottom-0 h-[20%] bg-[radial-gradient(ellipse_at_50%_100%,rgba(22,34,27,0.48),rgba(12,18,15,0)_72%)] blur-xl" />
+              <div className="absolute bottom-[-2%] left-[7%] h-[68%] w-[4.2%] origin-bottom -rotate-[6deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(142,152,106,0)_0%,rgba(102,116,79,0.24)_18%,rgba(52,64,42,0.76)_100%)] animate-reed-sway" style={{ animationDuration: '9.4s', animationDelay: '-1.1s', clipPath: 'polygon(46% 0%, 58% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.35px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] left-[18%] h-[78%] w-[3.6%] origin-bottom rotate-[2deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(148,158,110,0)_0%,rgba(106,120,82,0.24)_18%,rgba(56,68,44,0.78)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '8.6s', animationDelay: '-2.8s', clipPath: 'polygon(45% 0%, 57% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.35px)' }} />
+              </div>
+              <div className="absolute bottom-[-2%] left-[28%] h-[62%] w-[3.2%] origin-bottom -rotate-[9deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(138,150,104,0)_0%,rgba(98,112,76,0.22)_18%,rgba(48,60,38,0.72)_100%)] animate-reed-sway" style={{ animationDuration: '10.2s', animationDelay: '-4.6s', clipPath: 'polygon(44% 0%, 56% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.3px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] left-[40%] h-[84%] w-[3.8%] origin-bottom rotate-[7deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(150,162,114,0)_0%,rgba(110,124,86,0.26)_18%,rgba(58,72,46,0.8)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '9.8s', animationDelay: '-0.7s', clipPath: 'polygon(45% 0%, 58% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.4px)' }} />
+              </div>
+              <div className="absolute bottom-[-2%] left-[54%] h-[58%] w-[3%] origin-bottom -rotate-[4deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(136,148,102,0)_0%,rgba(98,110,74,0.22)_18%,rgba(44,56,36,0.72)_100%)] animate-reed-sway" style={{ animationDuration: '8.9s', animationDelay: '-3.2s', clipPath: 'polygon(44% 0%, 56% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.3px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] left-[66%] h-[72%] w-[3.5%] origin-bottom rotate-[5deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(144,156,110,0)_0%,rgba(104,118,80,0.24)_18%,rgba(52,64,42,0.76)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '9.1s', animationDelay: '-5.1s', clipPath: 'polygon(45% 0%, 57% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.35px)' }} />
+              </div>
+            </div>
+            <div className="absolute right-[4%] -bottom-[7%] h-[52%] w-[24%] pointer-events-none opacity-78">
+              <div className="absolute inset-x-[6%] bottom-0 h-[20%] bg-[radial-gradient(ellipse_at_50%_100%,rgba(22,34,27,0.48),rgba(12,18,15,0)_72%)] blur-xl" />
+              <div className="absolute bottom-[-2%] right-[8%] h-[76%] w-[3.5%] origin-bottom rotate-[7deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(146,158,112,0)_0%,rgba(106,120,84,0.24)_18%,rgba(54,66,44,0.78)_100%)] animate-reed-sway" style={{ animationDuration: '9.7s', animationDelay: '-2.1s', clipPath: 'polygon(45% 0%, 57% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.35px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] right-[20%] h-[62%] w-[3.1%] origin-bottom -rotate-[5deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(138,150,106,0)_0%,rgba(100,114,78,0.22)_18%,rgba(48,60,40,0.74)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '8.4s', animationDelay: '-4.3s', clipPath: 'polygon(44% 0%, 56% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.3px)' }} />
+              </div>
+              <div className="absolute bottom-[-2%] right-[31%] h-[82%] w-[3.7%] origin-bottom rotate-[3deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(150,162,116,0)_0%,rgba(110,126,88,0.26)_18%,rgba(58,70,48,0.8)_100%)] animate-reed-sway" style={{ animationDuration: '10.4s', animationDelay: '-0.9s', clipPath: 'polygon(45% 0%, 58% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.4px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] right-[44%] h-[56%] w-[3%] origin-bottom -rotate-[8deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(136,148,104,0)_0%,rgba(98,110,76,0.22)_18%,rgba(46,56,38,0.72)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '9.2s', animationDelay: '-5.5s', clipPath: 'polygon(44% 0%, 56% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.3px)' }} />
+              </div>
+              <div className="absolute bottom-[-2%] right-[56%] h-[70%] w-[3.4%] origin-bottom rotate-[6deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(144,156,110,0)_0%,rgba(104,118,82,0.24)_18%,rgba(52,64,42,0.78)_100%)] animate-reed-sway" style={{ animationDuration: '8.8s', animationDelay: '-3.7s', clipPath: 'polygon(45% 0%, 57% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.35px)' }} />
+              </div>
+              <div className="absolute bottom-[-1%] right-[68%] h-[64%] w-[3.1%] origin-bottom -rotate-[3deg]">
+                <div className="h-full w-full origin-bottom bg-[linear-gradient(180deg,rgba(140,152,108,0)_0%,rgba(102,116,80,0.22)_18%,rgba(48,60,40,0.74)_100%)] animate-reed-sway-reverse" style={{ animationDuration: '9.9s', animationDelay: '-1.8s', clipPath: 'polygon(44% 0%, 56% 0%, 100% 100%, 0% 100%)', filter: 'blur(0.3px)' }} />
+              </div>
+            </div>
             <div className="absolute inset-x-0 bottom-0 h-[24%] bg-[linear-gradient(180deg,rgba(10,14,18,0)_0%,rgba(8,12,16,0.62)_100%)]" />
           </>
         );
@@ -222,7 +268,7 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
       {renderExtraVisualLayers()}
 
       {/* Canvas-basierte Lebendigkeitseffekte */}
-      {room.visual.overlayEffect && (
+      {room.visual.overlayEffect && room.id !== 'ufer-nebel' && (
         <div className="absolute pointer-events-none" style={overlayWrapperStyle}>
           <div className={`absolute inset-0 ${room.id === 'ufer-nebel' ? 'opacity-100' : ''}`} style={overlayCanvasStyle}>
             <CanvasOverlay effect={room.visual.overlayEffect} intensity={1} />
