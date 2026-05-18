@@ -110,19 +110,41 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate }) => {
 
       {/* Oberer Bereich: Name & Emotionales Wort */}
       <div className="relative z-10 pt-16 px-8 md:px-16 flex flex-col items-center pointer-events-none text-center">
-        <span className="text-xs tracking-[0.4em] text-gray-400/70 uppercase font-light mb-3 font-sans drop-shadow-lg">
-          {room.emotionalWord}
-        </span>
-        <h1 className="text-3xl md:text-5xl font-light tracking-wider text-gray-100 font-cinzel drop-shadow-lg">
-          {room.name}
-        </h1>
+        <div
+          className="px-6 py-4 md:px-10 md:py-6 rounded-[2rem] backdrop-blur-[2px] border border-white/8"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(7, 11, 16, 0.42) 0%, rgba(7, 11, 16, 0.28) 48%, rgba(7, 11, 16, 0.1) 72%, rgba(7, 11, 16, 0) 100%)',
+            boxShadow: '0 16px 42px rgba(0, 0, 0, 0.18)'
+          }}
+        >
+          <span className="text-xs tracking-[0.4em] text-gray-300/78 uppercase font-light mb-3 font-sans block">
+            {room.emotionalWord}
+          </span>
+          <h1
+            className="text-3xl md:text-5xl font-light tracking-wider text-gray-50 font-cinzel"
+            style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.88), 0 10px 28px rgba(0, 0, 0, 0.42)' }}
+          >
+            {room.name}
+          </h1>
+        </div>
       </div>
 
       {/* Mittlerer Bereich: Gedanke & Mikro-Ereignisse */}
       <div className="relative z-10 px-8 md:px-24 max-w-3xl mx-auto flex flex-col items-center justify-center pointer-events-none text-center my-auto">
-        <p className="text-lg md:text-2xl text-gray-200/90 font-spectral italic font-light leading-relaxed tracking-wide mb-8 drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>
-          „{room.thought}“
-        </p>
+        <div
+          className="mb-8 max-w-2xl rounded-[2rem] px-6 py-5 md:px-8 md:py-6 backdrop-blur-[2px] border border-white/8"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(6, 10, 14, 0.5) 0%, rgba(6, 10, 14, 0.34) 52%, rgba(6, 10, 14, 0.1) 76%, rgba(6, 10, 14, 0) 100%)',
+            boxShadow: '0 18px 46px rgba(0, 0, 0, 0.2)'
+          }}
+        >
+          <p
+            className="text-lg md:text-2xl text-gray-100/92 font-spectral italic font-light leading-relaxed tracking-wide"
+            style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.9), 0 8px 24px rgba(0, 0, 0, 0.34)' }}
+          >
+            „{room.thought}“
+          </p>
+        </div>
 
         {microEvent && (
           <div className="bg-black/30 border border-white/10 rounded-2xl px-6 py-3 backdrop-blur-md animate-fade-in-out max-w-lg">

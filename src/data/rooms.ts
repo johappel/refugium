@@ -11,10 +11,18 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #020617 100%)',
       overlayEffect: 'rain'
     },
-    audio: { type: 'rain', volume: 0.24 },
-    singleSounds: [
-      { name: 'Distant Thunder', frequency: 110, type: 'thunder', intervalMin: 80, intervalMax: 160 }
-    ],
+    audio: {
+      type: 'silence',
+      volume: 0.48,
+      sampleLayer: {
+        url: '/sound-effects/healing.mp3',
+        volume: 0.12,
+        startDelay: 10,
+        fadeInSeconds: 4,
+        loop: true,
+        lowpass: 2600
+      }
+    },
     clickAreas: [
       { id: 'ca-regen-1', targetRoomId: 'bibliothek-nacht', x: 70, y: 30, width: 25, height: 40, label: 'Ein warmer Lichtschein im Flur' },
       { id: 'ca-regen-2', targetRoomId: 'wintergarten', x: 10, y: 50, width: 20, height: 35, label: 'Beschlagene Glastür zum Grün' }
@@ -34,10 +42,7 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 30% 40%, #291e1e 0%, #1a1010 60%, #0a0505 100%)',
       overlayEffect: 'dust'
     },
-    audio: { type: 'archive', volume: 0.28 },
-    singleSounds: [
-      { name: 'Glass Resonance', frequency: 392, type: 'bell', intervalMin: 70, intervalMax: 130 }
-    ],
+    audio: { type: 'silence', volume: 0 },
     clickAreas: [
       { id: 'ca-bib-1', targetRoomId: 'fensterplatz-regen', x: 5, y: 20, width: 20, height: 60, label: 'Das leise Prasseln am Fenster' },
       { id: 'ca-bib-2', targetRoomId: 'sternwarte', x: 75, y: 15, width: 20, height: 50, label: 'Eine Wendeltreppe nach oben' },
@@ -59,7 +64,7 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 60% 50%, #11251d 0%, #08140e 65%, #020604 100%)',
       overlayEffect: 'leaves'
     },
-    audio: { type: 'wind', volume: 0.3 },
+    audio: { type: 'wind', volume: 0.05 },
     singleSounds: [
       { name: 'Wintergarten Chime', frequency: 783.99, type: 'bell', intervalMin: 28, intervalMax: 72 }
     ],
@@ -83,10 +88,17 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'linear-gradient(135deg, #1b1e2b 0%, #10121a 50%, #06070a 100%)',
       overlayEffect: 'train-lights'
     },
-    audio: { type: 'train', volume: 0.3 },
-    singleSounds: [
-      { name: 'Muted Rail Joint', frequency: 120, type: 'triangle', intervalMin: 30, intervalMax: 70 }
-    ],
+    audio: {
+      type: 'silence',
+      volume: 0.3,
+      sampleLayer: {
+        url: '/sound-effects/train.mp3',
+        volume: 0.24,
+        fadeInSeconds: 3.2,
+        loop: true,
+        lowpass: 1700
+      }
+    },
     clickAreas: [
       { id: 'ca-zug-1', targetRoomId: 'bibliothek-nacht', x: 10, y: 25, width: 20, height: 50, label: 'Abteil-Tür zum stillen Gang' },
       { id: 'ca-zug-2', targetRoomId: 'sternwarte', x: 70, y: 20, width: 25, height: 40, label: 'Blick in den klaren Nachthimmel' }
@@ -102,14 +114,21 @@ export const INITIAL_ROOMS: Room[] = [
     emotionalWord: 'Weite',
     thought: 'Die Kuppel steht offen, und doch bleibst du gehalten. Unzählige Lichtpunkte lassen jeden inneren Lärm kleiner werden. Hier darf dein Atem weit und ruhig werden.',
     visual: {
-      type: 'css-ambient',
+      type: 'image',
       background: 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%)',
       overlayEffect: 'stars'
     },
-    audio: { type: 'observatory', volume: 0.22 },
-    singleSounds: [
-      { name: 'Star Shimmer', frequency: 880, type: 'bell', intervalMin: 110, intervalMax: 220 }
-    ],
+    audio: {
+      type: 'silence',
+      volume: 1,
+      sampleLayer: {
+        url: '/sound-effects/sternwarte.mp3',
+        volume: 0.5,
+        fadeInSeconds: 4,
+        loop: true,
+        lowpass: 2600
+      }
+    },
     clickAreas: [
       { id: 'ca-stern-1', targetRoomId: 'bibliothek-nacht', x: 20, y: 65, width: 25, height: 25, label: 'Die dunkle Holztreppe hinab' },
       { id: 'ca-stern-2', targetRoomId: 'nachtzug', x: 75, y: 55, width: 20, height: 35, label: 'Ein fernes Grollen am Horizont' },
@@ -262,10 +281,10 @@ export const INITIAL_ROOMS: Room[] = [
     },
     audio: {
       type: 'ocean',
-      volume: 0.32,
+      volume: 0.01,
       sampleLayer: {
         url: '/sound-effects/deep-ocean.mp3',
-        volume: 0.22,
+        volume: 2.22,
         startDelay: 1,
         startOffset: 0.45,
         fadeInSeconds: 1.5,

@@ -122,17 +122,17 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           });
         }
       } else if (effect === 'dust') {
-        for (let i = 0; i < 95 * intensity; i++) {
+        for (let i = 0; i < 220 * intensity; i++) {
           particles.push({
             kind: 'dust-mote',
-            x: Math.random() * width,
-            y: Math.random() * height,
-            vx: 0.06 + Math.random() * 0.12,
-            vy: -0.015 - Math.random() * 0.04,
-            size: 0.8 + Math.random() * 2.2,
-            opacity: 0.08 + Math.random() * 0.2,
-            life: Math.random() * 360,
-            maxLife: 360 + Math.random() * 260,
+            x: width * (0.06 + Math.random() * 0.66),
+            y: height * (0.04 + Math.random() * 0.5),
+            vx: -0.012 + Math.random() * 0.024,
+            vy: 0.05 + Math.random() * 0.08,
+            size: 0.55 + Math.random() * 1.15,
+            opacity: 0.08 + Math.random() * 0.14,
+            life: Math.random() * 220,
+            maxLife: 900 + Math.random() * 520,
             phase: Math.random() * Math.PI * 2,
             speed: 0.5 + Math.random() * 0.8
           });
@@ -286,19 +286,26 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           });
         }
       } else if (effect === 'train-lights') {
-        for (let i = 0; i < 15 * intensity; i++) {
+        for (let i = 0; i < 6 * intensity; i++) {
+          const isNear = Math.random() < 0.28;
+          const hue = isNear
+            ? (Math.random() < 0.72 ? 30 + Math.random() * 12 : 46 + Math.random() * 8)
+            : (Math.random() < 0.32 ? 44 + Math.random() * 10 : 198 + Math.random() * 18);
           particles.push({
             kind: 'train-light',
-            x: -Math.random() * width,
-            y: height * (0.2 + Math.random() * 0.55),
-            vx: 2 + Math.random() * 4,
+            x: -Math.random() * width * (isNear ? 0.45 : 1),
+            y: height * (isNear ? (0.34 + Math.random() * 0.34) : (0.18 + Math.random() * 0.38)),
+            vx: isNear ? 4.8 + Math.random() * 4.2 : 0.7 + Math.random() * 1.3,
             vy: 0,
-            size: 14 + Math.random() * 42,
-            opacity: 0.08 + Math.random() * 0.24,
+            size: isNear ? 6.2 + Math.random() * 5.4 : 1.8 + Math.random() * 2.2,
+            opacity: isNear ? 0.18 + Math.random() * 0.16 : 0.08 + Math.random() * 0.1,
             life: 0,
             maxLife: 1,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.9 + Math.random() * 0.6
+            speed: isNear ? 1.2 + Math.random() * 0.55 : 0.55 + Math.random() * 0.3,
+            index: isNear ? 1 : 0,
+            hue,
+            glowIntensity: isNear ? 0.95 + Math.random() * 0.45 : 0.36 + Math.random() * 0.28
           });
         }
       } else if (effect === 'rays') {
@@ -489,12 +496,24 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     };
 
     const drawDustMote = (p: Particle, time: number) => {
-      const drift = Math.sin(time * 0.0012 * p.speed + p.phase) * 0.25;
-      const pulse = 0.65 + Math.sin(time * 0.001 * p.speed + p.phase) * 0.35;
-      const r = p.size * (0.8 + pulse * 0.4);
+      const drift = Math.sin(time * 0.0012 * p.speed + p.phase) * 0.22;
+      const pulse = 0.74 + Math.sin(time * 0.001 * p.speed + p.phase) * 0.26;
+      const r = p.size * (0.78 + pulse * 0.28);
+      const lightStrength = Math.max(0, 1 - Math.abs((p.x / Math.max(1, width)) - 0.27) / 0.44);
+
+      if (lightStrength > 0.04) {
+        const glow = ctx.createRadialGradient(p.x + drift, p.y, 0, p.x + drift, p.y, r * 3.2);
+        glow.addColorStop(0, `rgba(255, 228, 184, ${p.opacity * pulse * lightStrength * 0.34})`);
+        glow.addColorStop(1, 'rgba(255, 228, 184, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(p.x + drift, p.y, r * 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       ctx.beginPath();
       ctx.arc(p.x + drift, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(220, 205, 170, ${p.opacity * pulse})`;
+      ctx.fillStyle = `rgba(226, 212, 182, ${p.opacity * pulse * (0.92 + lightStrength * 0.58)})`;
       ctx.fill();
     };
 
@@ -722,17 +741,47 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     };
 
     const drawTrainLight = (p: Particle, time: number) => {
-      const swayY = Math.sin(time * 0.002 * p.speed + p.phase) * 5;
-      const length = p.size * (0.9 + Math.sin(time * 0.001 + p.phase) * 0.2);
-      ctx.save();
-      ctx.filter = 'blur(1.5px)';
-      const grad = ctx.createLinearGradient(p.x - length, p.y + swayY, p.x + length, p.y + swayY);
-      grad.addColorStop(0, 'rgba(180, 210, 255, 0)');
-      grad.addColorStop(0.5, `rgba(220, 235, 255, ${p.opacity})`);
-      grad.addColorStop(1, 'rgba(180, 210, 255, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(p.x - length, p.y + swayY - 1.1, length * 2, 2.2);
-      ctx.restore();
+      const isNear = (p.index ?? 0) === 1;
+      const swayY = Math.sin(time * 0.0016 * p.speed + p.phase) * (isNear ? 2.8 : 1.6);
+      const pulse = 0.84 + Math.sin(time * 0.003 * p.speed + p.phase) * (isNear ? 0.16 : 0.1);
+      const x = p.x;
+      const y = p.y + swayY;
+      const hue = p.hue ?? 210;
+      const outerRadius = p.size * (isNear ? (1.9 + (p.glowIntensity ?? 0.9) * 0.82) : (1.5 + (p.glowIntensity ?? 0.45) * 0.55)) * pulse;
+      const coreRadius = p.size * (isNear ? (0.62 + pulse * 0.16) : (0.52 + pulse * 0.1));
+      const isWarmSignal = isNear && hue < 80 && (p.glowIntensity ?? 0.9) > 1.1;
+
+      if (isWarmSignal) {
+        const streakLength = outerRadius * (2.1 + Math.sin(time * 0.0014 + p.phase) * 0.24);
+        const streak = ctx.createLinearGradient(x - streakLength, y, x + streakLength, y);
+        streak.addColorStop(0, `hsla(${hue - 4}, 92%, 66%, 0)`);
+        streak.addColorStop(0.5, `hsla(${hue}, 100%, 82%, ${p.opacity * 0.34})`);
+        streak.addColorStop(1, `hsla(${hue + 4}, 92%, 66%, 0)`);
+        ctx.strokeStyle = streak;
+        ctx.lineWidth = Math.max(1, coreRadius * 0.46);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x - streakLength, y);
+        ctx.lineTo(x + streakLength, y);
+        ctx.stroke();
+      }
+
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, outerRadius);
+      halo.addColorStop(0, `hsla(${hue}, 95%, 86%, ${p.opacity * (isNear ? 0.34 : 0.26)})`);
+      halo.addColorStop(0.45, `hsla(${hue}, 88%, 72%, ${p.opacity * (isNear ? 0.16 : 0.1)})`);
+      halo.addColorStop(1, `hsla(${hue}, 82%, 58%, 0)`);
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      const core = ctx.createRadialGradient(x, y, 0, x, y, coreRadius);
+      core.addColorStop(0, `hsla(${hue}, 100%, 96%, ${Math.min(1, p.opacity * (isNear ? 1.1 : 0.95))})`);
+      core.addColorStop(1, `hsla(${hue}, 92%, 72%, 0)`);
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
+      ctx.fill();
     };
 
     // ============================================================
@@ -1248,15 +1297,15 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
             break;
           }
           case 'dust-mote': {
-            if (p.x > width + 30 || p.y < -30 || p.life > p.maxLife) {
-              p.x = -20 - Math.random() * 40;
-              p.y = Math.random() * height;
-              p.vx = 0.06 + Math.random() * 0.12;
-              p.vy = -0.015 - Math.random() * 0.04;
-              p.size = 0.8 + Math.random() * 2.2;
-              p.opacity = 0.08 + Math.random() * 0.2;
+            if (p.y > height + 24 || p.x < -30 || p.x > width + 30 || p.life > p.maxLife) {
+              p.x = width * (0.06 + Math.random() * 0.66);
+              p.y = -8 - Math.random() * height * 0.12;
+              p.vx = -0.012 + Math.random() * 0.024;
+              p.vy = 0.05 + Math.random() * 0.08;
+              p.size = 0.55 + Math.random() * 1.15;
+              p.opacity = 0.08 + Math.random() * 0.14;
               p.life = 0;
-              p.maxLife = 360 + Math.random() * 260;
+              p.maxLife = 900 + Math.random() * 520;
             }
             break;
           }
@@ -1399,12 +1448,20 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           }
           case 'train-light': {
             if (p.x - p.size > width + 80) {
-              p.x = -120 - Math.random() * width * 0.6;
-              p.y = height * (0.2 + Math.random() * 0.55);
-              p.vx = 2 + Math.random() * 4;
-              p.size = 14 + Math.random() * 42;
-              p.opacity = 0.08 + Math.random() * 0.24;
+              const isNear = Math.random() < 0.28;
+              const hue = isNear
+                ? (Math.random() < 0.72 ? 30 + Math.random() * 12 : 46 + Math.random() * 8)
+                : (Math.random() < 0.32 ? 44 + Math.random() * 10 : 198 + Math.random() * 18);
+              p.x = -120 - Math.random() * width * (isNear ? 0.25 : 0.6);
+              p.y = height * (isNear ? (0.34 + Math.random() * 0.34) : (0.18 + Math.random() * 0.38));
+              p.vx = isNear ? 4.8 + Math.random() * 4.2 : 0.7 + Math.random() * 1.3;
+              p.size = isNear ? 6.2 + Math.random() * 5.4 : 1.8 + Math.random() * 2.2;
+              p.opacity = isNear ? 0.18 + Math.random() * 0.16 : 0.08 + Math.random() * 0.1;
               p.phase = Math.random() * Math.PI * 2;
+              p.speed = isNear ? 1.2 + Math.random() * 0.55 : 0.55 + Math.random() * 0.3;
+              p.index = isNear ? 1 : 0;
+              p.hue = hue;
+              p.glowIntensity = isNear ? 0.95 + Math.random() * 0.45 : 0.36 + Math.random() * 0.28;
             }
             break;
           }

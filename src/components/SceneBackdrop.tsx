@@ -107,11 +107,30 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
 
   const renderExtraVisualLayers = () => {
     switch (room.id) {
+      case 'bibliothek-nacht':
+        return (
+          <>
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,12,10,0.1)_0%,rgba(10,7,6,0.08)_38%,rgba(6,4,3,0.24)_100%)]" />
+            <div className="absolute left-[10%] top-[-6%] h-[80%] w-[34%] origin-top-left -rotate-[6deg] bg-[linear-gradient(180deg,rgba(255,225,176,0.15)_0%,rgba(214,178,122,0.07)_36%,rgba(130,96,62,0.02)_70%,transparent_100%)] blur-[2px] opacity-72" />
+            <div className="absolute inset-x-0 bottom-0 h-[24%] bg-[linear-gradient(180deg,rgba(10,7,6,0)_0%,rgba(7,5,4,0.46)_100%)]" />
+          </>
+        );
+
       case 'nachtzug':
         return (
           <>
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,8,12,0.08)_0%,rgba(6,6,9,0.14)_48%,rgba(4,4,6,0.34)_100%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_26%,rgba(255,182,118,0.18),transparent_16%),radial-gradient(circle_at_85%_26%,rgba(255,186,126,0.18),transparent_16%),radial-gradient(circle_at_50%_56%,rgba(138,168,204,0.07),transparent_26%)]" />
+            <div className="absolute left-[24.8%] top-[11.5%] h-[49.5%] w-[50.8%] overflow-hidden rounded-[2.4rem] pointer-events-none">
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,34,0.04)_0%,rgba(10,14,20,0.02)_36%,rgba(7,10,14,0.08)_100%)]" />
+              <svg className="absolute bottom-[20%] left-[-14%] h-[24%] w-[138%] opacity-34 blur-[1.4px] animate-train-horizon-slow" viewBox="0 0 1200 220" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M0 220H1200V182C1162 181 1124 166 1092 159C1063 153 1030 170 998 166C968 162 938 142 906 144C872 146 842 176 808 174C776 172 748 146 714 144C680 142 650 165 616 166C582 167 552 138 518 136C484 134 454 162 418 164C384 166 356 146 322 146C286 146 254 172 220 174C188 176 160 156 126 158C92 160 58 178 0 176V220Z" fill="#09111a" />
+              </svg>
+              <svg className="absolute bottom-[9%] left-[-10%] h-[20%] w-[130%] opacity-22 blur-[1px] animate-train-horizon-drift" viewBox="0 0 1200 180" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M0 180H1200V150C1160 149 1128 138 1092 136C1058 134 1028 148 994 148C960 148 930 134 894 134C860 134 828 150 794 151C758 152 726 136 690 136C654 136 624 150 588 152C554 154 522 140 486 140C450 140 420 156 384 158C348 160 316 146 280 146C246 146 214 160 180 162C142 164 104 154 0 154V180Z" fill="#05090f" />
+              </svg>
+              <div className="absolute inset-x-0 bottom-0 h-[26%] bg-[linear-gradient(180deg,rgba(4,7,10,0)_0%,rgba(5,7,10,0.18)_52%,rgba(4,6,8,0.42)_100%)]" />
+            </div>
             <div className="absolute inset-x-[24%] top-[11%] h-[51%] bg-[radial-gradient(ellipse_at_50%_45%,rgba(255,255,255,0.06),rgba(120,148,176,0.03)_58%,transparent_78%)]" />
             <div className="absolute inset-x-0 bottom-0 h-[22%] bg-[linear-gradient(180deg,rgba(9,7,6,0)_0%,rgba(8,7,6,0.46)_100%)]" />
           </>

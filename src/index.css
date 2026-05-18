@@ -102,6 +102,24 @@
   }
 }
 
+@keyframes trainHorizonSlow {
+  0% {
+    transform: translate3d(-6%, 0, 0);
+  }
+  100% {
+    transform: translate3d(4%, 0, 0);
+  }
+}
+
+@keyframes trainHorizonDrift {
+  0% {
+    transform: translate3d(-10%, 0, 0);
+  }
+  100% {
+    transform: translate3d(6%, 0, 0);
+  }
+}
+
 .animate-rain {
   animation: rain linear infinite;
 }
@@ -129,4 +147,14 @@
 .animate-torch-flicker {
   animation: torchFlicker 5.2s ease-in-out infinite;
   will-change: transform, opacity, filter;
+}
+
+.animate-train-horizon-slow {
+  animation: trainHorizonSlow 28s linear infinite alternate;
+  will-change: transform;
+}
+
+.animate-train-horizon-drift {
+  animation: trainHorizonDrift 18s linear infinite alternate;
+  will-change: transform;
 }
