@@ -120,6 +120,18 @@
   }
 }
 
+@keyframes trainCarSway {
+  0% {
+    transform: translate3d(0, -1.2%, 0) scale(1.035);
+  }
+  50% {
+    transform: translate3d(0, 1.35%, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(0, -1.2%, 0) scale(1.035);
+  }
+}
+
 .animate-rain {
   animation: rain linear infinite;
 }
@@ -157,4 +169,10 @@
 .animate-train-horizon-drift {
   animation: trainHorizonDrift 18s linear infinite alternate;
   will-change: transform;
+}
+
+.animate-train-car-sway {
+  animation: trainCarSway 5.8s ease-in-out infinite;
+  will-change: transform;
+  transform-origin: 50% 50%;
 }

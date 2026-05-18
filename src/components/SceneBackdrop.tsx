@@ -105,6 +105,11 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
         backgroundColor: room.colorTemperature
       };
 
+  const backgroundLayerClassName =
+    room.id === 'nachtzug' && room.visual.overlayEffect === 'train-lights'
+      ? 'absolute -inset-[2.5%] animate-train-car-sway'
+      : 'absolute inset-0';
+
   const renderExtraVisualLayers = () => {
     switch (room.id) {
       case 'bibliothek-nacht':
@@ -206,7 +211,9 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
   };
 
   return (
-    <div className={`absolute inset-0 overflow-hidden ${className}`} style={bgStyle}>
+    <div className={`absolute inset-0 overflow-hidden ${className}`} style={{ backgroundColor: room.colorTemperature }}>
+      <div className={backgroundLayerClassName} style={bgStyle} />
+
       {/* Sanfter Vignette-Verlauf für Tiefe */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,rgba(255,255,255,0.04),transparent_55%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.15)_0%,transparent_30%,transparent_65%,rgba(2,6,23,0.35)_100%)] pointer-events-none" />

@@ -8,7 +8,7 @@ import { RoomView } from './components/RoomView';
 import { TransitionOverlay } from './components/TransitionOverlay';
 import { ArchitectureModal } from './components/ArchitectureModal';
 import { PackageInstaller } from './components/PackageInstaller';
-import { Volume2, VolumeX, BookOpen, Package } from 'lucide-react';
+import { Volume2, VolumeX, BookOpen, Package, Eye } from 'lucide-react';
 
 const STORAGE_KEY_LAST_ROOM = 'refugium_last_room_id';
 
@@ -46,6 +46,7 @@ export const App: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isArchModalOpen, setIsArchModalOpen] = useState(false);
   const [isPackageInstallerOpen, setIsPackageInstallerOpen] = useState(false);
+  const [thoughtReplayTrigger, setThoughtReplayTrigger] = useState(0);
 
   useEffect(() => {
     const installedRooms = packageService.getInstalledRooms();
@@ -125,7 +126,13 @@ export const App: React.FC = () => {
     <div className="relative w-screen h-screen overflow-hidden bg-black font-sans select-none">
       {!hasEntered && <WelcomeScreen onEnter={handleEnterRefuge} />}
 
-      {hasEntered && <RoomView room={currentRoom} onNavigate={handleNavigate} />}
+      {hasEntered && (
+        <RoomView
+          room={currentRoom}
+          onNavigate={handleNavigate}
+          thoughtReplayTrigger={thoughtReplayTrigger}
+        />
+      )}
 
       {activeTransition && pendingRoom && (
         <TransitionOverlay
@@ -146,6 +153,14 @@ export const App: React.FC = () => {
             title={isMuted ? 'Ton einschalten' : 'Ton stummschalten'}
           >
             {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+
+          <button
+            onClick={() => setThoughtReplayTrigger((current) => current + 1)}
+            className="p-2.5 bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white rounded-full backdrop-blur-md border border-white/10 transition-all"
+            title="Hauptgedanken erneut zeigen"
+          >
+            <Eye size={16} />
           </button>
 
           <button
