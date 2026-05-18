@@ -66,6 +66,57 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!hasEntered) return;
+
+    const resumeAudio = async () => {
+      if (document.hidden || !document.hasFocus() || activeTransition) return;
+
+      await audioService.init();
+      audioService.playRoomAudio(currentRoom.audio, currentRoom.singleSounds);
+      audioService.setMuted(isMuted);
+    };
+
+    const suspendAudio = () => {
+      audioService.stopAll();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        suspendAudio();
+        return;
+      }
+
+      void resumeAudio();
+    };
+
+    const handleWindowBlur = () => {
+      suspendAudio();
+    };
+
+    const handleWindowFocus = () => {
+      void resumeAudio();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+    window.addEventListener('pagehide', suspendAudio);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+      window.removeEventListener('pagehide', suspendAudio);
+    };
+  }, [activeTransition, currentRoom, hasEntered, isMuted]);
+
+  useEffect(() => {
+    return () => {
+      audioService.stopAll();
+    };
+  }, []);
+
   const handleEnterRefuge = async () => {
     await audioService.init();
     setHasEntered(true);

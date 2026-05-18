@@ -42,7 +42,7 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 30% 40%, #291e1e 0%, #1a1010 60%, #0a0505 100%)',
       overlayEffect: 'dust'
     },
-    audio: { type: 'silence', volume: 0 },
+    audio: { type: 'library', volume: 0.045 },
     clickAreas: [
       { id: 'ca-bib-1', targetRoomId: 'fensterplatz-regen', x: 5, y: 20, width: 20, height: 60, label: 'Das Leuchten der regennassen Veranda' },
       { id: 'ca-bib-2', targetRoomId: 'sternwarte', x: 75, y: 15, width: 20, height: 50, label: 'Die Wendeltreppe unter offenem Himmel' },
@@ -70,7 +70,7 @@ export const INITIAL_ROOMS: Room[] = [
       sampleLayer: {
         url: '/sound-effects/gewaechshaus.mp3',
         volume: 0.36,
-        fadeInSeconds: 3,
+        fadeInSeconds: 0,
         loop: true,
         lowpass: 2600
       }
@@ -171,27 +171,23 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'stiller-innenhof',
     name: 'Brunnenlicht',
     emotionalWord: 'Tiefe',
-    thought: 'Das leise, beständige Plätschern des Brunnens rahmt die Stille des Innenhofs sanft ein. Wie das sich klärende Wasser bietet dieser Ort die Möglichkeit, die eigene Aufmerksamkeit ganz im Jetzt ruhen zu lassen.',
+    thought: 'Das leise, beständige Plätschern des Brunnens rahmt die Stille des Gartens sanft ein. Wie das sich klärende Wasser bietet dieser Ort die Möglichkeit, die eigene Aufmerksamkeit ganz im Jetzt ruhen zu lassen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 60%, #27272a 0%, #18181b 60%, #09090b 100%)',
       overlayEffect: 'stone-drips'
     },
-    audio: { type: 'silence', volume: 0 },
-    singleSounds: [
-      {
-        name: 'Brunnen',
-        type: 'sample',
-        startImmediately: true,
-        sample: {
-          url: '/sound-effects/brunnen.mp3',
-          volume: 0.22,
-          lowpass: 2600
-        },
-        intervalMin: 60,
-        intervalMax: 60
+    audio: {
+      type: 'silence',
+      volume: 0.34,
+      sampleLayer: {
+        url: '/sound-effects/celtic-well.mp3',
+        volume: 0.72,
+        fadeInSeconds: 2.4,
+        loop: true,
+        lowpass: 2600
       }
-    ],
+    },
     clickAreas: [
       { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 22, y: 14, width: 18, height: 24, label: 'Die warme Stube aus Holz und Papier' },
       { id: 'ca-hof-4', targetRoomId: 'leere-kirche', x: 53, y: 14, width: 20, height: 30, label: 'Die Kapelle voller fallendem Licht' },
@@ -207,29 +203,23 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'leere-kirche',
     name: 'Kapellenruine',
     emotionalWord: 'Weite',
-    thought: 'Durch die alten, offenen Steinbögen fällt ein friedliches Licht. Die verwitterten Mauern strahlen eine unaufgeregte Beständigkeit aus. Ein freier, urteilsfreier Raum, der einlädt, Gedanken einfach ziehen zu lassen.',
+    thought: 'Durch den eingestürzten Dachstuhl fällt ein friedliches Licht. Die verwitterten Mauern strahlen eine unaufgeregte Beständigkeit aus. Ein freier, urteilsfreier Raum, der einlädt, Gedanken einfach ziehen zu lassen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 18%, #473b2f 0%, #211b17 45%, #080706 100%)',
       overlayEffect: 'prayer-lights'
     },
-    audio: { type: 'silence', volume: 0 },
-    singleSounds: [
-      {
-        name: 'Glockenschlag',
-        type: 'sample',
-        sample: {
-          url: '/sound-effects/glocke.mp3',
-          volume: 0.2,
-          lowpass: 2400,
-          clipDuration: 5.5,
-          playbackRateMin: 0.99,
-          playbackRateMax: 1.01
-        },
-        intervalMin: 15,
-        intervalMax: 15
+    audio: {
+      type: 'cathedral',
+      volume: 0.04,
+      sampleLayer: {
+        url: '/sound-effects/glocke.mp3',
+        volume: 0.72,
+        fadeInSeconds: 2.2,
+        loop: true,
+        lowpass: 2400
       }
-    ],
+    },
     clickAreas: [
       { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 12, y: 58, width: 18, height: 28, label: 'Zurück durch den stillen Hof' },
       { id: 'ca-kirche-2', targetRoomId: 'bibliothek-nacht', x: 70, y: 28, width: 18, height: 42, label: 'Der Seitengang zur Lesestube' }
@@ -315,7 +305,17 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'radial-gradient(circle at 50% 30%, #1e6b7b 0%, #0a3340 35%, #04161c 100%)',
       overlayEffect: 'water'
     },
-    audio: { type: 'lagoon', volume: 0.26 },
+    audio: {
+      type: 'silence',
+      volume: 0.34,
+      sampleLayer: {
+        url: '/sound-effects/blaue-grotte.mp3',
+        volume: 0.7,
+        fadeInSeconds: 2,
+        loop: false,
+        lowpass: 2300
+      }
+    },
     clickAreas: [
       { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 18, y: 14, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },
       { id: 'ca-lagune-2', targetRoomId: 'sandstrand', x: 58, y: 60, width: 26, height: 26, label: 'Über warmen Stein hinaus zum Abendstrand' }

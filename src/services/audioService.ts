@@ -87,7 +87,7 @@ interface RoomSoundProfile {
 const AMBIENT_GAIN_COMPENSATION = 2.4;
 
 function normalizeAmbientGain(level: number): number {
-  return Math.min(1, Math.max(0.003, level * AMBIENT_GAIN_COMPENSATION));
+  return Math.min(1, Math.max(0, level * AMBIENT_GAIN_COMPENSATION));
 }
 
 function createLFOChain(
@@ -666,7 +666,7 @@ class AudioService {
     const targetRoom = this.createRoom(
       config,
       0.001,
-      Math.max(0.02, config.volume * 0.4),
+      config.volume * 0.4,
       durationSeconds * 0.55
     );
     this.transitioningRoom = targetRoom;
@@ -679,33 +679,11 @@ class AudioService {
 
   /** Complete the transition: destroy old room, ramp new room to full. */
   public finalizeTransition(config: AmbientAudioConfig, singleConfigs?: SingleSoundConfig[]): void {
-    if (!this.ctx || !this.transitioningRoom) return;
+    if (!this.ctx) return;
 
-    const now = this.ctx.currentTime;
-    const targetRoom = this.transitioningRoom;
-    this.transitioningRoom = null;
-
-    // Destroy the old room
-    if (this.activeRoom) {
-      this.destroyRoom(this.activeRoom);
-      this.activeRoom = null;
-    }
-
-    // Ramp the new room up to its full target volume
-    targetRoom.gainNode.gain.cancelScheduledValues(now);
-    targetRoom.gainNode.gain.setValueAtTime(
-      Math.max(targetRoom.gainNode.gain.value, 0.001),
-      now
-    );
-    targetRoom.gainNode.gain.linearRampToValueAtTime(normalizeAmbientGain(config.volume), now + 3.5);
-
-    this.activeRoom = targetRoom;
-    this.isPlaying = true;
-    this.startAmbientSampleLayer(targetRoom);
-
-    if (singleConfigs && singleConfigs.length > 0) {
-      this.scheduleSingleSounds(singleConfigs);
-    }
+    // Hard reset at the transition boundary so no old room layers or samples leak through.
+    this.stopAll();
+    this.playRoomAudio(config, singleConfigs);
   }
 
   // -- Helpers --
@@ -837,10 +815,10 @@ class AudioService {
     const now = this.ctx.currentTime;
     room.gainNode.gain.cancelScheduledValues(now);
     room.gainNode.gain.setValueAtTime(
-      Math.max(room.gainNode.gain.value, 0.001),
+      Math.max(room.gainNode.gain.value, 0.0001),
       now
     );
-    room.gainNode.gain.linearRampToValueAtTime(0.001, now + duration);
+    room.gainNode.gain.linearRampToValueAtTime(0, now + duration);
   }
 
   private destroyRoom(room: ActiveRoom): void {
