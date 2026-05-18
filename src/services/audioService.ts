@@ -85,7 +85,6 @@ interface RoomSoundProfile {
 }
 
 const AMBIENT_GAIN_COMPENSATION = 2.4;
-const DRIP_SAMPLE_URL = '/sound-effects/wassertroepfchen.mp3';
 
 function normalizeAmbientGain(level: number): number {
   return Math.min(1, Math.max(0.003, level * AMBIENT_GAIN_COMPENSATION));
@@ -869,7 +868,7 @@ class AudioService {
     }
   }
 
-  // -- Single Sounds (bells, chimes, thunder) --
+  // -- Single sounds (occasional sample-based accents) --
 
   private scheduleSingleSounds(configs: SingleSoundConfig[]): void {
     this.clearSingleSoundTimers();
@@ -881,7 +880,7 @@ class AudioService {
         const delay =
           (Math.random() * (conf.intervalMax - conf.intervalMin) + conf.intervalMin) * 1000;
         const timerId = window.setTimeout(() => {
-          this.playSingleTone(conf);
+          this.playSingleSound(conf);
           scheduleNext();
         }, delay);
         this.singleSoundTimers.push(timerId);
@@ -889,82 +888,20 @@ class AudioService {
 
       const initialDelay = conf.startImmediately
         ? 80
-        : conf.type === 'drip'
-          ? 1200 + Math.random() * 2200
-          : (Math.random() * (conf.intervalMax - conf.intervalMin) + conf.intervalMin) * 1000;
+        : (Math.random() * (conf.intervalMax - conf.intervalMin) + conf.intervalMin) * 1000;
 
       const initialTimerId = window.setTimeout(() => {
-        this.playSingleTone(conf);
+        this.playSingleSound(conf);
         scheduleNext();
       }, initialDelay);
       this.singleSoundTimers.push(initialTimerId);
     });
   }
 
-  private playSingleTone(conf: SingleSoundConfig): void {
+  private playSingleSound(conf: SingleSoundConfig): void {
     if (!this.ctx || !this.masterGain || !this.isPlaying) return;
 
-    if (conf.type === 'drip') {
-      void this.playDripSample(conf);
-      return;
-    }
-
-    if (conf.type === 'sample') {
-      void this.playConfiguredSample(conf);
-      return;
-    }
-
-    const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type =
-      conf.type === 'sine' || conf.type === 'bell' || conf.type === 'chime'
-        ? 'sine'
-        : 'triangle';
-    osc.frequency.setValueAtTime(conf.frequency, now);
-
-    // Second oscillator for a richer, slightly-detuned harmonic
-    const osc2 = this.ctx.createOscillator();
-    const gain2 = this.ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(conf.frequency * 2.01, now);
-    gain2.gain.setValueAtTime(0.001, now);
-
-    if (conf.type === 'thunder') {
-      osc.frequency.linearRampToValueAtTime(conf.frequency * 0.6, now + 3);
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.15, now + 2);
-      gain.gain.linearRampToValueAtTime(0.001, now + 5);
-      osc.connect(gain);
-      gain.connect(this.masterGain!);
-      osc.start(now);
-      osc.stop(now + 5.1);
-    } else if (conf.type === 'bell' || conf.type === 'chime') {
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.12, now + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 4.0);
-
-      gain2.gain.setValueAtTime(0.001, now);
-      gain2.gain.linearRampToValueAtTime(0.05, now + 0.03);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-
-      osc.connect(gain);
-      osc2.connect(gain2);
-      gain.connect(this.masterGain!);
-      gain2.connect(this.masterGain!);
-      osc.start(now);
-      osc2.start(now);
-      osc.stop(now + 4.1);
-      osc2.stop(now + 2.6);
-    } else {
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.08, now + 0.3);
-      gain.gain.linearRampToValueAtTime(0.001, now + 2.0);
-      osc.connect(gain);
-      gain.connect(this.masterGain!);
-      osc.start(now);
-      osc.stop(now + 2.1);
-    }
+    void this.playConfiguredSample(conf);
   }
 
   private clearSingleSoundTimers(): void {
@@ -1004,53 +941,8 @@ class AudioService {
     return loadingPromise;
   }
 
-  private async playDripSample(conf: SingleSoundConfig): Promise<void> {
-    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
-
-    const buffer = await this.loadSoundEffectBuffer(DRIP_SAMPLE_URL);
-    if (!buffer || !this.ctx || !this.masterGain || !this.isPlaying) {
-      this.playSyntheticDrip(conf);
-      return;
-    }
-
-    const now = this.ctx.currentTime;
-    const source = this.ctx.createBufferSource();
-    const filter = this.ctx.createBiquadFilter();
-    const gain = this.ctx.createGain();
-    const startOffset = Math.min(0.08, Math.max(0, buffer.duration - 0.25));
-    const clipDuration = Math.min(2.2, Math.max(1.45, buffer.duration - startOffset));
-
-    source.buffer = buffer;
-    source.playbackRate.setValueAtTime(0.96 + Math.random() * 0.08, now);
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2400, now);
-    filter.Q.setValueAtTime(0.4, now);
-
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.05, now + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.018, now + Math.max(0.45, clipDuration * 0.55));
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + clipDuration);
-
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.masterGain);
-
-    source.start(now, startOffset, clipDuration);
-    source.stop(now + clipDuration + 0.08);
-    source.onended = () => {
-      try {
-        source.disconnect();
-        filter.disconnect();
-        gain.disconnect();
-      } catch {
-        /* already disconnected */
-      }
-    };
-  }
-
   private async playConfiguredSample(conf: SingleSoundConfig): Promise<void> {
-    if (!this.ctx || !this.masterGain || !this.isPlaying || !conf.sample) return;
+    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
 
     const { sample } = conf;
     const buffer = await this.loadSoundEffectBuffer(sample.url);
@@ -1098,47 +990,5 @@ class AudioService {
     };
   }
 
-  private playSyntheticDrip(conf: SingleSoundConfig): void {
-    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
-
-    const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const osc2 = this.ctx.createOscillator();
-    const filter = this.ctx.createBiquadFilter();
-    const gain = this.ctx.createGain();
-    const gain2 = this.ctx.createGain();
-
-    osc.type = 'sine';
-    osc2.type = 'sine';
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(conf.frequency * 4.5, now);
-    filter.Q.setValueAtTime(0.8, now);
-
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.linearRampToValueAtTime(0.055, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
-
-    gain2.gain.setValueAtTime(0.001, now);
-    gain2.gain.linearRampToValueAtTime(0.018, now + 0.015);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-
-    osc.frequency.setValueAtTime(conf.frequency * 1.4, now);
-    osc.frequency.exponentialRampToValueAtTime(conf.frequency * 0.76, now + 0.18);
-    osc2.frequency.setValueAtTime(conf.frequency * 2.2, now);
-    osc2.frequency.exponentialRampToValueAtTime(conf.frequency * 1.2, now + 0.1);
-
-    osc.connect(filter);
-    osc2.connect(gain2);
-    filter.connect(gain);
-    gain.connect(this.masterGain);
-    gain2.connect(this.masterGain);
-
-    osc.start(now);
-    osc2.start(now + 0.01);
-    osc.stop(now + 1.3);
-    osc2.stop(now + 0.75);
-  }
 }
-
 export const audioService = new AudioService();

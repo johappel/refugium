@@ -42,8 +42,8 @@ const ROOM_MICRO_EVENTS: Record<string, string[]> = {
     'Jenseits der Scheibe gleitet die Nacht vorbei, ohne dass irgendetwas erreicht werden müsste.'
   ],
   sternwarte: [
-    'Ein einzelner Stern tritt aus dem Dunkel, klein, fern und doch nicht zu verwechseln.',
-    'Über der offenen Kuppel liegt eine Weite, in der du fast nichts bist und ganz gegenwärtig.'
+    'Ein einzelner Stern tritt aus dem Dunkel, fern und doch zum Greifen nah.',
+    'Über der offenen Kuppel liegt eine Weite, in der der Blick sich öffnet und der Moment ganz dir gehört.'
   ],
   'ufer-nebel': [
     'Im Nebel zeichnet sich für einen Augenblick die nächste Planke deutlicher ab.',
@@ -51,11 +51,11 @@ const ROOM_MICRO_EVENTS: Record<string, string[]> = {
   ],
   'stiller-innenhof': [
     'Aus der dunklen Tiefe steigt ein stilles Glänzen auf, als würde das Wasser kurz den Atem anhalten.',
-    'Ein Tropfen fällt ins Becken, und für einen Augenblick öffnet sich im Wasser mehr Ruhe als zuvor.'
+    'Ein Tropfen fällt ins Becken, und für einen Augenblick breitet sich sanfte Ruhe über das Wasser aus.'
   ],
   'leere-kirche': [
-    'Durch die offene Ruine steigt ein stiller Lichtfaden auf, wie ein Gedanke zum Himmel.',
-    'Zwischen den brüchigen Mauern bleibt ein Aufschimmer von Hoffnung über dem Altar zurück.'
+    'Durch das offene Gewölbe fangen sich kleine Staubpartikel tanzend im weichen Gegenlicht.',
+    'Zwischen den verwitterten Steinen breitet sich eine gelassene, unaufgeregte Stille aus.'
   ],
   hain: [
     'Zwischen den Wurzeln glimmt blaues Licht auf und verlischt wieder sanft.',

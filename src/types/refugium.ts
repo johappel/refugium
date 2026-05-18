@@ -35,10 +35,9 @@ export interface AmbientAudioConfig {
 
 export interface SingleSoundConfig {
   name: string;
-  frequency: number;
-  type: 'sine' | 'triangle' | 'bell' | 'chime' | 'thunder' | 'drip' | 'sample';
+  type: 'sample';
   startImmediately?: boolean;
-  sample?: {
+  sample: {
     url: string;
     volume: number;
     lowpass?: number;

@@ -5,7 +5,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'fensterplatz-regen',
     name: 'Veranda im Regen',
     emotionalWord: 'Aufatmen',
-    thought: 'Regen und Bergsee tragen den Lärm des Tages nach draußen. Zwischen Kerzen, Decken und warmem Holz darfst du einfach ankommen. Hier wirst du nicht gedrängt, nur gehalten.',
+    thought: 'Das sanfte Prasseln des Regens legt sich wie eine schützende Decke über die Welt draußen. Hier gibt es keine Eile. Ein geschützter Raum, der dich einlädt, den Moment einfach umhüllen zu lassen und frei durchzuatmen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #020617 100%)',
@@ -36,7 +36,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'bibliothek-nacht',
     name: 'Lesestube bei Nacht',
     emotionalWord: 'Sammlung',
-    thought: 'Feuer, Leder und Papier nehmen den Druck aus deinen Gedanken. Was eben noch kreiste, legt sich in ruhige Schichten. Hier darf Klarheit langsam wachsen, ohne dass du sie erzwingen musst.',
+    thought: 'Zwischen warmem Licht, Leder und altem Papier findet der Geist eine ruhige Verankerung. Eine Einladung, das außen Vorbeirollende pausieren zu lassen und Klarheit ganz im eigenen Tempo entstehen zu lassen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 30% 40%, #291e1e 0%, #1a1010 60%, #0a0505 100%)',
@@ -58,7 +58,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'wintergarten',
     name: 'Gewächshaus des Morgens',
     emotionalWord: 'Erneuerung',
-    thought: 'Licht fällt in breiten Bahnen durch das Glas und weckt alles Grüne. Der Duft von Erde und Blättern richtet dich von innen auf. Hier darf neue Kraft leise in dir aufgehen.',
+    thought: 'Das diffuse Morgenlicht bricht sich in feuchten Blättern. Der Duft von feuchter Erde vermittelt Stabilität und sanftes Wachstum. Ein freundlicher Ort, an dem sich neue Energie auf entspannte Weise entfalten kann.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 60% 50%, #11251d 0%, #08140e 65%, #020604 100%)',
@@ -75,9 +75,6 @@ export const INITIAL_ROOMS: Room[] = [
         lowpass: 2600
       }
     },
-    singleSounds: [
-      { name: 'Wintergarten Chime', frequency: 783.99, type: 'bell', intervalMin: 28, intervalMax: 72 }
-    ],
     clickAreas: [
       { id: 'ca-wint-1', targetRoomId: 'fensterplatz-regen', x: 15, y: 60, width: 25, height: 30, label: 'Zurück zur warmen Veranda' },
       { id: 'ca-wint-2', targetRoomId: 'ufer-nebel', x: 65, y: 40, width: 25, height: 45, label: 'Ein heller Steg im Morgennebel' },
@@ -92,7 +89,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'nachtzug',
     name: 'Nachtabteil',
     emotionalWord: 'Unterwegssein',
-    thought: 'Der Zug trägt dich durch die Nacht, ohne dass du irgendwo ankommen musst. Hinter dem Fenster zieht die Welt vorbei, und mit ihr alles, was heute noch nach dir gegriffen hat. Hier darfst du einfach unterwegs sein: gehalten vom Rhythmus der Schienen, in Bewegung, ohne Zielzwang.',
+    thought: 'Vom gleichmäßigen Rollen der Räder begleitet, zieht die Welt draußen gelassen vorbei. Ein Raum in sanfter Bewegung, der dazu einlädt, alle Pläne für eine Weile ruhen zu lassen und einfach nur im Hier zu sein.',
     visual: {
       type: 'image',
       background: 'linear-gradient(135deg, #1b1e2b 0%, #10121a 50%, #06070a 100%)',
@@ -122,7 +119,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'sternwarte',
     name: 'Offene Sternwarte',
     emotionalWord: 'Unendlichkeit',
-    thought: 'Unter dem klaren Himmel wird spürbar, wie weit alles ist und wie klein du darin bist. Und doch ist jeder Stern, der aufleuchtet, unverwechselbar, als trüge selbst die Ferne einen Namen. Hier werden deine Gedanken frei: Nichts ist von Bedeutung. Alles ist bedeutsam.',
+    thought: 'Unter dem leuchtenden Sternenzelt öffnet sich eine weite, friedliche Perspektive. In dieser stillen Weite können sich Gedanken vollkommen frei und unbeschwert bewegen, fernab von jedem Alltagsrhythmus.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%)',
@@ -160,9 +157,6 @@ export const INITIAL_ROOMS: Room[] = [
       overlayEffect: 'mist'
     },
     audio: { type: 'shoreline', volume: 0.24 },
-    singleSounds: [
-      { name: 'Water Lap', frequency: 220, type: 'sine', intervalMin: 24, intervalMax: 60 }
-    ],
     clickAreas: [
       { id: 'ca-ufer-1', targetRoomId: 'wintergarten', x: 10, y: 30, width: 25, height: 40, label: 'Das Glashaus hinter dem Dunst' },
       { id: 'ca-ufer-2', targetRoomId: 'stiller-innenhof', x: 70, y: 40, width: 25, height: 35, label: 'Ein stiller Hof mit Brunnenlicht' },
@@ -177,7 +171,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'stiller-innenhof',
     name: 'Brunnenlicht',
     emotionalWord: 'Tiefe',
-    thought: 'Am Brunnen dürfen tiefe Gedanken bis auf den Grund sinken und still werden. Wer hier in die Tiefe hört, stößt nicht auf Leere, sondern auf etwas Klares, das aus dem Dunkel aufsteigt. Aus diesem Wasser lässt sich Ruhe schöpfen, Weite, vielleicht auch ein neuer Blick auf das, was in dir klingt.',
+    thought: 'Das leise, beständige Plätschern des Brunnens rahmt die Stille des Innenhofs sanft ein. Wie das sich klärende Wasser bietet dieser Ort die Möglichkeit, die eigene Aufmerksamkeit ganz im Jetzt ruhen zu lassen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 60%, #27272a 0%, #18181b 60%, #09090b 100%)',
@@ -187,7 +181,6 @@ export const INITIAL_ROOMS: Room[] = [
     singleSounds: [
       {
         name: 'Brunnen',
-        frequency: 329.63,
         type: 'sample',
         startImmediately: true,
         sample: {
@@ -213,8 +206,8 @@ export const INITIAL_ROOMS: Room[] = [
   {
     id: 'leere-kirche',
     name: 'Kapellenruine',
-    emotionalWord: 'Sehnsucht',
-    thought: 'Wie diese zerfallene Kirche, so brüchig fühlen sich oft Sinn, Vertrauen und Glaube an. Und doch: Wie kleine Lichtffunken steigen sie auf, wie ein kurzes Gebet, wie ein stiller Aufschrei, wie Hoffnung. Hier dürfen deine Gedanken aufsteigen, ohne Antwort geben zu müssen, und sich für einen Moment dem öffnen, was größer ist als du selbst.',
+    emotionalWord: 'Weite',
+    thought: 'Durch die alten, offenen Steinbögen fällt ein friedliches Licht. Die verwitterten Mauern strahlen eine unaufgeregte Beständigkeit aus. Ein freier, urteilsfreier Raum, der einlädt, Gedanken einfach ziehen zu lassen.',
     visual: {
       type: 'image',
       background: 'radial-gradient(circle at 50% 18%, #473b2f 0%, #211b17 45%, #080706 100%)',
@@ -224,7 +217,6 @@ export const INITIAL_ROOMS: Room[] = [
     singleSounds: [
       {
         name: 'Glockenschlag',
-        frequency: 293.66,
         type: 'sample',
         sample: {
           url: '/sound-effects/glocke.mp3',
@@ -252,7 +244,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'hain',
     name: 'Behüteter Hain',
     emotionalWord: 'Geborgensein',
-    thought: 'Zwischen alten Wurzeln, blauem Schimmer und wachendem Licht liegt ein Weg, der dich freundlich aufnimmt. Dieser Ort erinnert deinen Körper daran, dass Freundschaft und Geborgenheit real sind. Hier kannst du bleiben, solange du magst.',
+    thought: 'Ein friedlicher Pfad unter weiten Kronen, geschützt durch alte, verwurzelte Bäume. Ein natürlicher Rückzugsort, der zum unbeschwerten Verweilen einlädt und dem Geist erlaubt, eine offene Ruhe zu finden.',
     visual: {
       type: 'image',
       background: 'radial-gradient(ellipse at 50% 0%, #3d4a25 0%, #1f2914 50%, #0d1208 100%)',
@@ -283,7 +275,7 @@ export const INITIAL_ROOMS: Room[] = [
     id: 'sandstrand',
     name: 'Abendstrand',
     emotionalWord: 'Loslassen',
-    thought: 'Am Abendstrand darf der Tag hinter dir bleiben. Die sinkende Sonne gibt dir das Recht, den Blick schweifen zu lassen, weg von allem, was getan, versäumt oder bedacht werden wollte. Hier dürfen deine Gedanken still und ziellos werden, bis nur noch Weite, Licht und das leise Kommen der Wellen bleiben.',
+    thought: 'Das beständige Vor und Zurück der Wellen begleitet den weich werdenden Abend. Ein offener Horizont, an dem Gedanken wie Treibholz mit der Strömung ziehen können – eine ruhige Kulisse, um den Tag entspannt loszulassen.',
     visual: {
       type: 'image',
       background: 'linear-gradient(180deg, #1e3542 0%, #2a4a5a 30%, #1c3a47 60%, #0f1f26 100%)',
@@ -303,9 +295,6 @@ export const INITIAL_ROOMS: Room[] = [
         roomGainMultiplier: 0.58
       }
     },
-    singleSounds: [
-      { name: 'Wave Crest', frequency: 180, type: 'sine', intervalMin: 24, intervalMax: 56 }
-    ],
     clickAreas: [
       { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 10, y: 30, width: 20, height: 45, label: 'Zurück über den lichten Nebelweg' },
       { id: 'ca-strand-2', targetRoomId: 'hain', x: 70, y: 20, width: 20, height: 40, label: 'Hinauf in den behüteten Hain' },
@@ -327,9 +316,6 @@ export const INITIAL_ROOMS: Room[] = [
       overlayEffect: 'water'
     },
     audio: { type: 'lagoon', volume: 0.26 },
-    singleSounds: [
-      { name: 'Cave Drop', frequency: 523.25, type: 'drip', intervalMin: 5, intervalMax: 10 }
-    ],
     clickAreas: [
       { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 18, y: 14, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },
       { id: 'ca-lagune-2', targetRoomId: 'sandstrand', x: 58, y: 60, width: 26, height: 26, label: 'Über warmen Stein hinaus zum Abendstrand' }
@@ -359,7 +345,6 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
         overlayEffect: 'leaves'
       },
       audio: { type: 'teahouse', volume: 0.22 },
-      singleSounds: [{ name: 'Bamboo Chime', frequency: 659.25, type: 'bell', intervalMin: 40, intervalMax: 90 }],
       clickAreas: [
         { id: 'ca-tee-1', targetRoomId: 'stiller-innenhof', x: 10, y: 30, width: 25, height: 50, label: 'Steinpfad zum Brunnenlicht' },
         { id: 'ca-tee-2', targetRoomId: 'wintergarten', x: 70, y: 25, width: 20, height: 45, label: 'Blick ins erwachende Gewächshaus' }
@@ -390,7 +375,6 @@ export const AVAILABLE_PACKAGES: RoomPackage[] = [
         overlayEffect: 'fire'
       },
       audio: { type: 'hearth', volume: 0.26 },
-      singleSounds: [{ name: 'Ember Crackle', frequency: 587.33, type: 'triangle', intervalMin: 26, intervalMax: 65 }],
       clickAreas: [
         { id: 'ca-kamin-1', targetRoomId: 'bibliothek-nacht', x: 20, y: 20, width: 30, height: 50, label: 'Durchgang zur nächtlichen Lesestube' },
         { id: 'ca-kamin-2', targetRoomId: 'fensterplatz-regen', x: 75, y: 30, width: 20, height: 40, label: 'Die regennasse Veranda im warmen Licht' }
