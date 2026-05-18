@@ -7,7 +7,7 @@ const HEADER_FADE_MS = 1400;
 const CENTER_TEXT_FADE_MS = 6000;
 const INITIAL_THOUGHT_DELAY_MS = 10000;
 const INITIAL_THOUGHT_DURATION_MS = 20000;
-const RETURN_THOUGHT_DURATION_MS = 15000;
+const RETURN_THOUGHT_DURATION_MS = INITIAL_THOUGHT_DURATION_MS;
 const MICRO_EVENT_INTERVAL_MS = 15000;
 const MICRO_EVENT_DELAY_MS = 10000;
 const MICRO_EVENT_VISIBLE_MS = MICRO_EVENT_INTERVAL_MS;
@@ -26,40 +26,56 @@ const SOFT_MIST_HEADER_PANEL_STYLE = {
 
 const ROOM_MICRO_EVENTS: Record<string, string[]> = {
   'fensterplatz-regen': [
-    'Ein einzelner, schwerer Tropfen rinnt langsam das Fenster hinab.',
-    'In der Ferne spiegelt sich das Scheinwerferlicht eines einsamen Wagens.'
+    'Regen glitzert auf dem Geländer, während eine Kerzenflamme ruhig weiterbrennt.',
+    'Vom See her hebt sich für einen Moment ein heller Streifen zwischen den Bergen.'
   ],
   'bibliothek-nacht': [
-    'Ein Glasgefäß fängt das warme Licht und gibt es stumpf an die Regale zurück.',
-    'Ein Hauch von Kräutern, Staub und altem Papier bleibt in der Luft stehen.'
+    'Im Kamin sinkt ein Holzscheit in sich zusammen und lässt das Licht kurz tiefer atmen.',
+    'Am Fensterglas zieht eine feine Regenbahn durch das Dunkel.'
   ],
   wintergarten: [
-    'Ein großes Farnblatt neigt sich unter dem eigenen Gewicht minimal nach unten.',
-    'Ein kühler Luftzug streift die beschlagene Scheibe.'
+    'Ein Sonnenstrahl wandert über nasses Blattwerk und öffnet einen kleinen Goldrand.',
+    'Aus dem feuchten Grün löst sich der Duft warmer Erde.'
   ],
   nachtzug: [
-    'Hinter dem dunklen Fenster zieht eine Baumreihe als weicher Schatten vorbei.',
-    'Ein fernes Signallicht gleitet kurz wie ein warmer Strich über die Scheibe.'
+    'Die Lampe auf dem Tisch schwingt fast unmerklich mit dem Rhythmus der Schienen.',
+    'Jenseits der Scheibe gleitet die Nacht vorbei, ohne dass irgendetwas erreicht werden müsste.'
   ],
   sternwarte: [
-    'Ein einzelner Stern wird für einen Atemzug heller und sinkt dann wieder in die Ruhe zurück.',
-    'Die kühle Nachtluft trägt den Duft von taufrischem Gras herauf.'
+    'Ein einzelner Stern tritt aus dem Dunkel, klein, fern und doch nicht zu verwechseln.',
+    'Über der offenen Kuppel liegt eine Weite, in der du fast nichts bist und ganz gegenwärtig.'
   ],
   'ufer-nebel': [
-    'Zwischen Wasser und Schilf zeichnet sich kurz der Bogen eines alten Stegs ab.',
-    'Der Nebel hebt sich für einen Herzschlag und lässt das gegenüberliegende Ufer ahnen.'
+    'Im Nebel zeichnet sich für einen Augenblick die nächste Planke deutlicher ab.',
+    'Über dem Wasser wird das Licht wärmer und legt einen stillen Schein auf den Steg.'
   ],
   'stiller-innenhof': [
-    'Im Brunnen sammelt sich ein ruhiger Kreis aus Licht und Wasser.',
-    'Ein Tropfen löst sich vom Steinrand und verliert sich im dunklen Becken.'
+    'Aus der dunklen Tiefe steigt ein stilles Glänzen auf, als würde das Wasser kurz den Atem anhalten.',
+    'Ein Tropfen fällt ins Becken, und für einen Augenblick öffnet sich im Wasser mehr Ruhe als zuvor.'
   ],
   'leere-kirche': [
-    'Eine Kerzenflamme richtet sich auf und macht die Stille noch größer.',
-    'Vom Gewölbe sinkt langsam ein Staubkorn durch den goldenen Lichtkegel.'
+    'Durch die offene Ruine steigt ein stiller Lichtfaden auf, wie ein Gedanke zum Himmel.',
+    'Zwischen den brüchigen Mauern bleibt ein Aufschimmer von Hoffnung über dem Altar zurück.'
+  ],
+  hain: [
+    'Zwischen den Wurzeln glimmt blaues Licht auf und verlischt wieder sanft.',
+    'Ein Windzug fährt durch das Blätterdach, doch der Pfad bleibt still und geschützt.'
+  ],
+  sandstrand: [
+    'Eine flache Welle schiebt sich über den Sand und nimmt die Spuren des Tages mit sich.',
+    'Über dem Wasser sinkt die Sonne tiefer und lässt den Blick ohne Ziel in die Ferne gleiten.'
   ],
   'blaue-lagune': [
-    'Das Wasser unter dem Felsbogen leuchtet auf, als würde es von innen atmen.',
-    'Ein einzelner Tropfen fällt von der Höhle herab und zieht einen weiten Ring.'
+    'Das blaue Wasser wirft tanzendes Licht gegen den Fels und an die Decken.',
+    'Eine Flamme neigt sich kurz zur Höhlenöffnung und richtet sich wieder auf.'
+  ],
+  'japanisches-teehaueschen': [
+    'Ein feiner Dampffaden steigt aus der Kanne und löst sich lautlos im Papierlicht auf.',
+    'Regen streicht über die Shoji-Schirme, weich genug, um fast wie Atem zu klingen.'
+  ],
+  kaminzimmer: [
+    'Im Kamin platzt leise eine Glut und färbt die Lehne des Sessels kurz rot.',
+    'Ein Schatten zieht langsam über die Holzvertäfelung und wird wieder still.'
   ]
 };
 
@@ -83,7 +99,10 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
   const [hoveredArea, setHoveredArea] = useState<string | null>(null);
   const [centerTextMode, setCenterTextMode] = useState<'hidden' | 'thought' | 'micro'>('hidden');
   const manualThoughtTimerRef = useRef<number | null>(null);
+  const manualThoughtActiveRef = useRef(false);
   const centerTextClearTimerRef = useRef<number | null>(null);
+  const pauseMicroEventsRef = useRef<(() => void) | null>(null);
+  const startMicroEventCycleRef = useRef<(() => void) | null>(null);
   const [renderedCenterText, setRenderedCenterText] = useState<{
     kind: CenterTextKind;
     content: string;
@@ -101,6 +120,7 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
     setMicroEvent(null);
     setRenderedCenterText(null);
     setIsCenterTextVisible(false);
+    manualThoughtActiveRef.current = false;
 
     if (manualThoughtTimerRef.current !== null) {
       clearTimeout(manualThoughtTimerRef.current);
@@ -127,7 +147,7 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
     };
 
     const runMicroEventCycle = () => {
-      if (isDisposed || microEventsPaused || roomMicroEvents.length === 0) {
+      if (isDisposed || microEventsPaused || manualThoughtActiveRef.current || roomMicroEvents.length === 0) {
         return;
       }
 
@@ -156,6 +176,10 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
     };
 
     const startMicroEventCycle = () => {
+      if (manualThoughtActiveRef.current) {
+        return;
+      }
+
       if (roomMicroEvents.length === 0) {
         setMicroEvent(null);
         setCenterTextMode('hidden');
@@ -165,6 +189,9 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       microEventsPaused = false;
       runMicroEventCycle();
     };
+
+    pauseMicroEventsRef.current = pauseMicroEvents;
+    startMicroEventCycleRef.current = startMicroEventCycle;
 
     sequenceTimers.push(
       window.setTimeout(() => {
@@ -185,6 +212,8 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
 
     return () => {
       isDisposed = true;
+      pauseMicroEventsRef.current = null;
+      startMicroEventCycleRef.current = null;
       clearTimeout(timer);
       sequenceTimers.forEach((id) => clearTimeout(id));
       clearMicroEventTimeout();
@@ -242,9 +271,13 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       clearTimeout(manualThoughtTimerRef.current);
     }
 
+    manualThoughtActiveRef.current = true;
+    pauseMicroEventsRef.current?.();
     setCenterTextMode('thought');
     manualThoughtTimerRef.current = window.setTimeout(() => {
+      manualThoughtActiveRef.current = false;
       setCenterTextMode((currentMode) => (currentMode === 'thought' ? 'hidden' : currentMode));
+      startMicroEventCycleRef.current?.();
       manualThoughtTimerRef.current = null;
     }, RETURN_THOUGHT_DURATION_MS);
   }, [thoughtReplayTrigger, room.id]);
