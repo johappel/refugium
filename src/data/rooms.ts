@@ -268,9 +268,9 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 15, y: 73, width: 20, height: 40, label: 'Zurück ins lichtdurchflutete Gewächshaus' },
-      { id: 'ca-hain-2', targetRoomId: 'stiller-innenhof', x: 25, y: 50, width: 25, height: 35, label: 'Der Pfad zum Brunnenlicht' },
-      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 65, y: 45, width: 18, height: 18, label: 'Ein warmer Abstieg zum Abendstrand' }
+      { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 20, y: 60, width: 20, height: 40, label: 'Zurück ins lichtdurchflutete Gewächshaus' },
+      { id: 'ca-hain-2', targetRoomId: 'stiller-innenhof', x: 80, y: 60, width: 25, height: 35, label: 'Der Pfad zum Brunnenlicht' },
+      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 5, y: 45, width: 18, height: 18, label: 'Ein warmer Abstieg zum Abendstrand' }
     ],
     transitionType: 'tuer',
     movementIntensity: 'gering',
