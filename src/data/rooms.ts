@@ -217,15 +217,22 @@ export const INITIAL_ROOMS: Room[] = [
     },
     audio: {
       type: 'cathedral',
-      volume: 0.04,
-      sampleLayer: {
-        url: 'sound-effects/glocke.mp3',
-        volume: 0.72,
-        fadeInSeconds: 2.2,
-        loop: true,
-        lowpass: 2400
-      }
+      volume: 0.04
     },
+    singleSounds: [
+      {
+        name: 'Kirchenglocke',
+        type: 'sample',
+        startImmediately: true,
+        sample: {
+          url: 'sound-effects/glocke.mp3',
+          volume: 0.72,
+          lowpass: 2400
+        },
+        intervalMin: 30,
+        intervalMax: 30
+      }
+    ],
     clickAreas: [
       { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 12, y: 58, width: 18, height: 28, label: 'Zurück durch den stillen Hof' },
       { id: 'ca-kirche-2', targetRoomId: 'bibliothek-nacht', x: 70, y: 28, width: 18, height: 42, label: 'Der Seitengang zur Lesestube' }
