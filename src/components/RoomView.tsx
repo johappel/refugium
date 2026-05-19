@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Room, ClickArea } from '../types/refugium';
+import { audioService } from '../services/audioService';
 import { AblageGeste } from './AblageGeste';
+import { ClickRippleOverlay, ClickRipple } from './ClickRippleOverlay';
 import { SceneBackdrop } from './SceneBackdrop';
 
 const HEADER_FADE_MS = 1400;
@@ -11,6 +13,80 @@ const RETURN_THOUGHT_DURATION_MS = INITIAL_THOUGHT_DURATION_MS;
 const MICRO_EVENT_INTERVAL_MS = 15000;
 const MICRO_EVENT_DELAY_MS = 10000;
 const MICRO_EVENT_VISIBLE_MS = MICRO_EVENT_INTERVAL_MS;
+const INTERACTION_RIPPLE_LIFETIME_MS = 5600;
+
+const ROOM_CLICK_SOUND = {
+  name: 'Rauminteraktion',
+  type: 'sample' as const,
+  sample: {
+    url: 'sound-effects/chakra3.mp3',
+    volume: 0.06,
+    lowpass: 5600,
+    playbackRateMin: 1.004,
+    playbackRateMax: 1.022
+  },
+  intervalMin: 0,
+  intervalMax: 0
+};
+
+const NAVIGATION_CLICK_SOUND = {
+  name: 'Navigation',
+  type: 'sample' as const,
+  sample: {
+    url: 'sound-effects/navigation.mp3',
+    volume: 0.45,
+    lowpass: 6200,
+    playbackRateMin: 0.994,
+    playbackRateMax: 1.012
+  },
+  intervalMin: 0,
+  intervalMax: 0
+};
+
+interface NavigationBeaconPalette {
+  core: string;
+  ring: string;
+  glow: string;
+}
+
+const NAVIGATION_BEACON_PALETTES: Record<string, NavigationBeaconPalette> = {
+  'fensterplatz-regen': { core: 'rgba(154, 208, 255, 0.7)', ring: 'rgba(154, 208, 255, 0.34)', glow: 'rgba(90, 172, 255, 0.42)' },
+  'bibliothek-nacht': { core: 'rgba(255, 204, 150, 0.7)', ring: 'rgba(255, 204, 150, 0.32)', glow: 'rgba(208, 126, 70, 0.4)' },
+  wintergarten: { core: 'rgba(183, 235, 177, 0.72)', ring: 'rgba(183, 235, 177, 0.34)', glow: 'rgba(112, 190, 112, 0.4)' },
+  nachtzug: { core: 'rgba(175, 191, 255, 0.68)', ring: 'rgba(175, 191, 255, 0.3)', glow: 'rgba(102, 120, 220, 0.4)' },
+  sternwarte: { core: 'rgba(186, 185, 255, 0.72)', ring: 'rgba(186, 185, 255, 0.32)', glow: 'rgba(116, 110, 255, 0.42)' },
+  'ufer-nebel': { core: 'rgba(215, 228, 244, 0.7)', ring: 'rgba(215, 228, 244, 0.28)', glow: 'rgba(150, 174, 205, 0.36)' },
+  'stiller-innenhof': { core: 'rgba(175, 242, 226, 0.7)', ring: 'rgba(175, 242, 226, 0.3)', glow: 'rgba(88, 178, 165, 0.38)' },
+  'leere-kirche': { core: 'rgba(255, 228, 182, 0.74)', ring: 'rgba(255, 228, 182, 0.34)', glow: 'rgba(228, 176, 112, 0.42)' },
+  hain: { core: 'rgba(190, 232, 154, 0.72)', ring: 'rgba(190, 232, 154, 0.3)', glow: 'rgba(124, 176, 92, 0.4)' },
+  sandstrand: { core: 'rgba(255, 198, 154, 0.72)', ring: 'rgba(255, 198, 154, 0.32)', glow: 'rgba(220, 142, 100, 0.42)' },
+  'blaue-lagune': { core: 'rgba(148, 234, 255, 0.74)', ring: 'rgba(148, 234, 255, 0.32)', glow: 'rgba(72, 168, 206, 0.42)' },
+  'japanisches-teehaueschen': { core: 'rgba(255, 220, 176, 0.72)', ring: 'rgba(255, 220, 176, 0.3)', glow: 'rgba(192, 140, 92, 0.4)' },
+  kaminzimmer: { core: 'rgba(255, 176, 136, 0.74)', ring: 'rgba(255, 176, 136, 0.32)', glow: 'rgba(214, 98, 58, 0.42)' }
+};
+
+const NAVIGATION_BEACON_FALLBACKS: NavigationBeaconPalette[] = [
+  { core: 'rgba(175, 214, 255, 0.72)', ring: 'rgba(175, 214, 255, 0.3)', glow: 'rgba(98, 168, 224, 0.42)' },
+  { core: 'rgba(194, 238, 176, 0.72)', ring: 'rgba(194, 238, 176, 0.32)', glow: 'rgba(110, 180, 108, 0.4)' },
+  { core: 'rgba(255, 208, 162, 0.72)', ring: 'rgba(255, 208, 162, 0.32)', glow: 'rgba(210, 132, 86, 0.42)' },
+  { core: 'rgba(198, 192, 255, 0.72)', ring: 'rgba(198, 192, 255, 0.3)', glow: 'rgba(112, 102, 224, 0.4)' }
+];
+
+function getNavigationBeaconPalette(targetRoomId: string): NavigationBeaconPalette {
+  const explicitPalette = NAVIGATION_BEACON_PALETTES[targetRoomId];
+  if (explicitPalette) return explicitPalette;
+
+  const hash = Array.from(targetRoomId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return NAVIGATION_BEACON_FALLBACKS[hash % NAVIGATION_BEACON_FALLBACKS.length];
+}
+
+function getNavigationBeaconDelay(areaId: string, targetRoomId: string, duration: number): number {
+  const hashSeed = `${areaId}:${targetRoomId}`;
+  const hash = Array.from(hashSeed).reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0);
+  const normalized = (hash % 997) / 997;
+
+  return -(duration * (0.14 + normalized * 0.78));
+}
 
 const SHARED_TEXT_PANEL_STYLE = {
   background:
@@ -81,13 +157,14 @@ const ROOM_MICRO_EVENTS: Record<string, string[]> = {
 
 interface RoomViewProps {
   room: Room;
+  visitedRoomIds: string[];
   onNavigate: (targetRoomId: string, area: ClickArea) => void;
   thoughtReplayTrigger: number;
 }
 
 type CenterTextKind = 'thought' | 'micro';
 
-export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtReplayTrigger }) => {
+export const RoomView: React.FC<RoomViewProps> = ({ room, visitedRoomIds, onNavigate, thoughtReplayTrigger }) => {
   const headerPanelStyle = room.id === 'ufer-nebel' ? SOFT_MIST_HEADER_PANEL_STYLE : SHARED_TEXT_PANEL_STYLE;
   const headerTitleShadow =
     room.id === 'ufer-nebel'
@@ -96,13 +173,15 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
 
   const [canNavigate, setCanNavigate] = useState(false);
   const [microEvent, setMicroEvent] = useState<string | null>(null);
-  const [hoveredArea, setHoveredArea] = useState<string | null>(null);
+  const [clickRipples, setClickRipples] = useState<ClickRipple[]>([]);
   const [centerTextMode, setCenterTextMode] = useState<'hidden' | 'thought' | 'micro'>('hidden');
   const manualThoughtTimerRef = useRef<number | null>(null);
   const manualThoughtActiveRef = useRef(false);
   const centerTextClearTimerRef = useRef<number | null>(null);
   const pauseMicroEventsRef = useRef<(() => void) | null>(null);
   const startMicroEventCycleRef = useRef<(() => void) | null>(null);
+  const interactionRippleTimersRef = useRef<number[]>([]);
+  const nextRippleIdRef = useRef(0);
   const [renderedCenterText, setRenderedCenterText] = useState<{
     kind: CenterTextKind;
     content: string;
@@ -115,7 +194,7 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
 
   useEffect(() => {
     setCanNavigate(false);
-    setHoveredArea(null);
+    setClickRipples([]);
     setCenterTextMode('hidden');
     setMicroEvent(null);
     setRenderedCenterText(null);
@@ -131,6 +210,9 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       clearTimeout(centerTextClearTimerRef.current);
       centerTextClearTimerRef.current = null;
     }
+
+    interactionRippleTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+    interactionRippleTimersRef.current = [];
 
     const roomMicroEvents = ROOM_MICRO_EVENTS[room.id] ?? [];
     const sequenceTimers: number[] = [];
@@ -229,6 +311,9 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       if (centerTextClearTimerRef.current !== null) {
         clearTimeout(centerTextClearTimerRef.current);
       }
+
+      interactionRippleTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+      interactionRippleTimersRef.current = [];
     };
   }, []);
 
@@ -284,24 +369,75 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
 
   const handleAreaClick = (area: ClickArea) => {
     if (!canNavigate) return;
+    audioService.playUiSample(NAVIGATION_CLICK_SOUND);
     onNavigate(area.targetRoomId, area);
   };
 
+  const spawnInteractionRipple = (container: HTMLElement, clientX: number, clientY: number) => {
+    const bounds = container.getBoundingClientRect();
+    if (bounds.width <= 0 || bounds.height <= 0) return;
+
+    const x = ((clientX - bounds.left) / bounds.width) * 100;
+    const y = ((clientY - bounds.top) / bounds.height) * 100;
+    const rippleId = nextRippleIdRef.current++;
+
+    setClickRipples((current) => [...current.slice(-5), { id: rippleId, x, y }]);
+
+    const timerId = window.setTimeout(() => {
+      setClickRipples((current) => current.filter((ripple) => ripple.id !== rippleId));
+      interactionRippleTimersRef.current = interactionRippleTimersRef.current.filter((id) => id !== timerId);
+    }, INTERACTION_RIPPLE_LIFETIME_MS);
+
+    interactionRippleTimersRef.current.push(timerId);
+  };
+
+  const triggerInteractionFeedback = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!['mouse', 'touch', 'pen'].includes(event.pointerType)) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('[data-nav-area="true"]')) return;
+
+    spawnInteractionRipple(event.currentTarget, event.clientX, event.clientY);
+
+    audioService.playUiSample(ROOM_CLICK_SOUND);
+  };
+
+  const handleAreaPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!['mouse', 'touch', 'pen'].includes(event.pointerType)) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+    event.stopPropagation();
+    spawnInteractionRipple(event.currentTarget, event.clientX, event.clientY);
+  };
+
   return (
-    <div className="relative w-screen h-screen overflow-hidden select-none flex flex-col justify-between">
+    <div
+      className="relative w-screen h-screen overflow-hidden select-none flex flex-col justify-between"
+      onPointerDown={triggerInteractionFeedback}
+    >
       {/* Hintergrundbild + Canvas-Animationen */}
       <SceneBackdrop room={room} />
+      <ClickRippleOverlay ripples={clickRipples} />
 
       {/* Unsichtbare Click-Areas */}
-      {room.clickAreas.map((area) => (
+      {room.clickAreas.map((area, index) => {
+        const beaconPalette = getNavigationBeaconPalette(area.targetRoomId);
+        const isVisitedTarget = visitedRoomIds.includes(area.targetRoomId);
+        const beaconDuration = 14.5 + (index % 4) * 1.2;
+        const beaconDelay = getNavigationBeaconDelay(area.id, area.targetRoomId, beaconDuration);
+
+        return (
         <div
           key={area.id}
+          data-nav-area="true"
+          onPointerDown={handleAreaPointerDown}
           onClick={() => handleAreaClick(area)}
-          onMouseEnter={() => setHoveredArea(area.id)}
-          onMouseLeave={() => setHoveredArea(null)}
-          className={`absolute z-20 cursor-pointer transition-all duration-700 ${
+          className={`absolute z-20 cursor-default transition-all duration-700 ${
             canNavigate ? 'pointer-events-auto' : 'pointer-events-none'
           }`}
+          aria-label={area.label ?? `Navigation zu ${area.targetRoomId}`}
+          title={area.label}
           style={{
             left: `${area.x}%`,
             top: `${area.y}%`,
@@ -309,15 +445,46 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
             height: `${area.height}%`
           }}
         >
-          {hoveredArea === area.id && area.label && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="bg-black/40 text-gray-300/80 text-xs px-3 py-1.5 rounded-full font-light tracking-wider backdrop-blur-sm border border-white/10 animate-fade-in font-sans">
-                {area.label}
-              </span>
-            </div>
-          )}
+          <span className="sr-only">{area.label ?? `Navigation zu ${area.targetRoomId}`}</span>
+          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div
+              className="navigation-beacon-haze"
+              style={{
+                background: `radial-gradient(circle, ${beaconPalette.glow} 0%, ${beaconPalette.ring} 34%, transparent 74%)`,
+                boxShadow: `0 0 26px ${beaconPalette.glow}, 0 0 54px ${beaconPalette.glow}`,
+                width: isVisitedTarget ? '3rem' : undefined,
+                height: isVisitedTarget ? '3rem' : undefined,
+                opacity: isVisitedTarget ? 0.18 : undefined,
+                animationDuration: `${beaconDuration}s`,
+                animationDelay: `${beaconDelay}s`
+              }}
+            />
+            <div
+              className="navigation-beacon-core"
+              style={{
+                background: beaconPalette.core,
+                boxShadow: `0 0 18px ${beaconPalette.glow}, 0 0 36px ${beaconPalette.glow}`,
+                animationDuration: `${beaconDuration}s`,
+                animationDelay: `${beaconDelay}s`
+              }}
+            />
+            <div
+              className="navigation-beacon-ring"
+              style={{
+                borderColor: beaconPalette.ring,
+                boxShadow: `0 0 18px ${beaconPalette.glow}, 0 0 42px ${beaconPalette.glow}`,
+                width: isVisitedTarget ? '2.35rem' : undefined,
+                height: isVisitedTarget ? '2.35rem' : undefined,
+                borderWidth: isVisitedTarget ? '1px' : undefined,
+                opacity: isVisitedTarget ? 0.72 : undefined,
+                animationDuration: `${beaconDuration}s`,
+                animationDelay: `${beaconDelay}s`
+              }}
+            />
+          </div>
         </div>
-      ))}
+        );
+      })}
 
       {/* Oberer Bereich: Name & Emotionales Wort */}
       <div className="relative z-10 pt-16 px-8 md:px-16 flex flex-col items-center pointer-events-none text-center">
