@@ -80,8 +80,8 @@ export const INITIAL_ROOMS: Room[] = [
     },
     clickAreas: [
       { id: 'ca-wint-1', targetRoomId: 'fensterplatz-regen', x: 15, y: 60, width: 25, height: 30, label: 'Zurück zur warmen Veranda' },
-      { id: 'ca-wint-2', targetRoomId: 'ufer-nebel', x: 65, y: 40, width: 25, height: 45, label: 'Ein heller Steg im Morgennebel' },
-      { id: 'ca-wint-3', targetRoomId: 'hain', x: 40, y: 10, width: 20, height: 30, label: 'Ein verwurzelter Pfad ins weite Grün' }
+      { id: 'ca-wint-2', targetRoomId: 'ufer-nebel', x: 55, y: 62, width: 25, height: 45, label: 'Ein heller Steg im Morgennebel' },
+      { id: 'ca-wint-3', targetRoomId: 'hain', x: 57, y: 38, width: 20, height: 30, label: 'Ein verwurzelter Pfad ins weite Grün' }
     ],
     transitionType: 'vorhang',
     movementIntensity: 'moderat',
@@ -110,8 +110,8 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-zug-1', targetRoomId: 'bibliothek-nacht', x: 10, y: 25, width: 20, height: 50, label: 'Der ruhige Gang zurück zur Lesestube' },
-      { id: 'ca-zug-2', targetRoomId: 'sternwarte', x: 70, y: 20, width: 25, height: 40, label: 'Ein Aufriss von Sternen über der Nacht' }
+      { id: 'ca-zug-1', targetRoomId: 'bibliothek-nacht', x: 6, y: 12, width: 20, height: 50, label: 'Der ruhige Gang zurück zur Lesestube' },
+      { id: 'ca-zug-2', targetRoomId: 'sternwarte', x: 70, y: 5, width: 25, height: 40, label: 'Ein Aufriss von Sternen über der Nacht' }
     ],
     transitionType: 'detailzoom',
     movementIntensity: 'moderat',
@@ -140,9 +140,9 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-stern-1', targetRoomId: 'bibliothek-nacht', x: 20, y: 65, width: 25, height: 25, label: 'Die Holztreppe zurück ins warme Licht' },
-      { id: 'ca-stern-2', targetRoomId: 'nachtzug', x: 75, y: 55, width: 20, height: 35, label: 'Ein fernes Rollen auf nächtlichen Schienen' },
-      { id: 'ca-stern-3', targetRoomId: 'blaue-lagune', x: 45, y: 15, width: 15, height: 30, label: 'Ein blauer Schimmer tief im Fels' }
+      { id: 'ca-stern-1', targetRoomId: 'bibliothek-nacht', x: 10, y: 65, width: 25, height: 25, label: 'Die Holztreppe zurück ins warme Licht' },
+      { id: 'ca-stern-2', targetRoomId: 'nachtzug', x: 80, y: 45, width: 20, height: 35, label: 'Ein fernes Rollen auf nächtlichen Schienen' },
+      { id: 'ca-stern-3', targetRoomId: 'blaue-lagune', x: 65, y: -10, width: 15, height: 30, label: 'Ein blauer Schimmer tief im Fels' }
     ],
     transitionType: 'dunkelheit',
     movementIntensity: 'sehr_gering',
@@ -166,7 +166,7 @@ export const INITIAL_ROOMS: Room[] = [
     clickAreas: [
       { id: 'ca-ufer-1', targetRoomId: 'wintergarten', x: 10, y: 30, width: 25, height: 40, label: 'Das Glashaus hinter dem Dunst' },
       { id: 'ca-ufer-2', targetRoomId: 'stiller-innenhof', x: 70, y: 40, width: 25, height: 35, label: 'Ein stiller Hof mit Brunnenlicht' },
-      { id: 'ca-ufer-3', targetRoomId: 'sandstrand', x: 40, y: 60, width: 20, height: 25, label: 'Der Weg hinab zum offenen Meer' }
+      { id: 'ca-ufer-3', targetRoomId: 'sandstrand', x: 40, y: 30, width: 20, height: 25, label: 'Der Weg zum offenen Meer' }
     ],
     transitionType: 'nebel',
     movementIntensity: 'gering',
@@ -196,9 +196,9 @@ export const INITIAL_ROOMS: Room[] = [
     },
     clickAreas: [
       { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 22, y: 14, width: 18, height: 24, label: 'Die warme Stube aus Holz und Papier' },
-      { id: 'ca-hof-4', targetRoomId: 'leere-kirche', x: 53, y: 14, width: 20, height: 30, label: 'Die Kapelle voller fallendem Licht' },
+      { id: 'ca-hof-4', targetRoomId: 'leere-kirche', x: 85, y: 30, width: 20, height: 30, label: 'Die Kapelle voller fallendem Licht' },
       { id: 'ca-hof-2', targetRoomId: 'ufer-nebel', x: 5, y: 50, width: 20, height: 40, label: 'Der Steg durch den lichten Nebel' },
-      { id: 'ca-hof-3', targetRoomId: 'hain', x: 75, y: 20, width: 20, height: 40, label: 'Ein Pfad unter alten Wurzeln' }
+      { id: 'ca-hof-3', targetRoomId: 'hain', x: 75, y: 50, width: 20, height: 40, label: 'Ein Pfad unter alten Wurzeln' }
     ],
     transitionType: 'wasserreflexion',
     movementIntensity: 'sehr_gering',
@@ -234,13 +234,13 @@ export const INITIAL_ROOMS: Room[] = [
       }
     ],
     clickAreas: [
-      { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 12, y: 58, width: 18, height: 28, label: 'Zurück durch den stillen Hof' },
-      { id: 'ca-kirche-2', targetRoomId: 'bibliothek-nacht', x: 70, y: 28, width: 18, height: 42, label: 'Der Seitengang zur Lesestube' }
+      { id: 'ca-kirche-1', targetRoomId: 'stiller-innenhof', x: 15, y: 58, width: 18, height: 28, label: 'Zurück zum Brunnen' },
+      { id: 'ca-kirche-2', targetRoomId: 'bibliothek-nacht', x: 65, y: 55, width: 18, height: 42, label: 'Der Seitengang zur Lesestube' }
     ],
     transitionType: 'dunkelheit',
     movementIntensity: 'sehr_gering',
     colorTemperature: '#1B1713',
-    hasAblageGeste: false
+    hasAblageGeste: true
   },
   // 3 NEUE ORTE - VERBESSERT
   {
@@ -268,9 +268,9 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 10, y: 40, width: 20, height: 40, label: 'Zurück ins lichtdurchflutete Gewächshaus' },
-      { id: 'ca-hain-2', targetRoomId: 'stiller-innenhof', x: 70, y: 50, width: 25, height: 35, label: 'Der Pfad zum Brunnenlicht' },
-      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 6, y: 78, width: 18, height: 18, label: 'Ein warmer Abstieg zum Abendstrand' }
+      { id: 'ca-hain-1', targetRoomId: 'wintergarten', x: 15, y: 73, width: 20, height: 40, label: 'Zurück ins lichtdurchflutete Gewächshaus' },
+      { id: 'ca-hain-2', targetRoomId: 'stiller-innenhof', x: 25, y: 50, width: 25, height: 35, label: 'Der Pfad zum Brunnenlicht' },
+      { id: 'ca-hain-3', targetRoomId: 'sandstrand', x: 65, y: 45, width: 18, height: 18, label: 'Ein warmer Abstieg zum Abendstrand' }
     ],
     transitionType: 'tuer',
     movementIntensity: 'gering',
@@ -302,8 +302,8 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 10, y: 30, width: 20, height: 45, label: 'Zurück über den lichten Nebelweg' },
-      { id: 'ca-strand-2', targetRoomId: 'hain', x: 70, y: 20, width: 20, height: 40, label: 'Hinauf in den behüteten Hain' },
+      { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 10, y: 45, width: 20, height: 45, label: 'Zurück über den lichten Nebelweg' },
+      { id: 'ca-strand-2', targetRoomId: 'hain', x: 85, y: 65, width: 20, height: 40, label: 'Hinauf in den behüteten Hain' },
       { id: 'ca-strand-3', targetRoomId: 'blaue-lagune', x: 40, y: 65, width: 20, height: 20, label: 'Ein geschützter Felspfad zur blauen Grotte' }
     ],
     transitionType: 'wasserreflexion',
@@ -333,8 +333,8 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 18, y: 14, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },
-      { id: 'ca-lagune-2', targetRoomId: 'sandstrand', x: 58, y: 60, width: 26, height: 26, label: 'Über warmen Stein hinaus zum Abendstrand' }
+      { id: 'ca-lagune-1', targetRoomId: 'sternwarte', x: 60, y: -5, width: 20, height: 38, label: 'Ein schmaler Felsgang zurück zur Sternwarte' },
+      { id: 'ca-lagune-2', targetRoomId: 'sandstrand', x: 35, y: 78, width: 26, height: 26, label: 'Über warmen Stein hinaus zum Abendstrand' }
     ],
     transitionType: 'wasserreflexion',
     movementIntensity: 'gering',

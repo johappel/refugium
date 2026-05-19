@@ -310,10 +310,10 @@
 
 @keyframes hainPanOnce {
   0% {
-    transform: translate3d(5.5%, 0, 0);
+    transform: translate3d(11.5%, 0, 0);
   }
   100% {
-    transform: translate3d(-10.5%, 0, 0);
+    transform: translate3d(-11.0%, 0, 0);
   }
 }
 
@@ -328,7 +328,7 @@
 }
 
 .animate-hain-pan-once {
-  animation: hainPanOnce 42s ease-out forwards;
+  animation: hainPanOnce 15s ease-in-out forwards;
   will-change: transform;
 }
 
