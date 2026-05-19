@@ -234,6 +234,39 @@
   }
 }
 
+@keyframes giftButtonIntro {
+  0% {
+    transform: translate3d(0, -10px, 0) scale(0.88) rotate(0deg);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+  16% {
+    transform: translate3d(-2px, 0, 0) scale(1.08) rotate(-9deg);
+    opacity: 1;
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0.2), 0 0 34px rgba(251, 191, 36, 0.26);
+  }
+  28% {
+    transform: translate3d(2px, 0, 0) scale(1.06) rotate(8deg);
+    opacity: 1;
+    box-shadow: 0 0 0 12px rgba(251, 191, 36, 0.14), 0 0 30px rgba(251, 191, 36, 0.2);
+  }
+  40% {
+    transform: translate3d(-1px, 0, 0) scale(1.03) rotate(-5deg);
+    opacity: 1;
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0.1), 0 0 26px rgba(251, 191, 36, 0.16);
+  }
+  56% {
+    transform: translate3d(1px, 0, 0) scale(1.01) rotate(3deg);
+    opacity: 1;
+    box-shadow: 0 0 0 8px rgba(251, 191, 36, 0.06), 0 0 20px rgba(251, 191, 36, 0.12);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
 .animate-rain {
   animation: rain linear infinite;
 }
@@ -256,6 +289,11 @@
 
 .animate-fade-in-out {
   animation: fadeInOut 7s ease-in-out forwards;
+}
+
+.animate-gift-button-intro {
+  animation: giftButtonIntro 3.2s cubic-bezier(0.2, 0.82, 0.22, 1) 0.25s 1 both;
+  will-change: transform, opacity, box-shadow;
 }
 
 @keyframes sandstrandPan {

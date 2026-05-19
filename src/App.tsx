@@ -216,8 +216,9 @@ export const App: React.FC = () => {
           <div className="flex items-center space-x-4">
             {currentRoom.giftPopoverText && (
               <button
+                key={`gift-${currentRoom.id}`}
                 onClick={() => setIsGiftPopoverOpen((current) => !current)}
-                className={`p-2.5 rounded-full backdrop-blur-md border transition-all ${
+                className={`animate-gift-button-intro p-2.5 rounded-full backdrop-blur-md border transition-all ${
                   isGiftPopoverOpen
                     ? 'bg-amber-200/20 text-amber-100 border-amber-200/30'
                     : 'bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white border-white/10'
