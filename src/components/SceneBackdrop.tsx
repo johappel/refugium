@@ -90,6 +90,13 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
             height: '68%',
             overflow: 'hidden'
           }
+      : room.id === 'hain' && room.visual.overlayEffect === 'rays'
+        ? {
+            top: '0%',
+            left: '-14%',
+            width: '128%',
+            height: '100%'
+          }
       : { inset: 0 };
 
   const bgStyle = hasImage
@@ -113,6 +120,11 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
       : room.id === 'hain' && room.visual.overlayEffect === 'rays'
         ? 'absolute inset-y-0 -left-[14%] -right-[14%] animate-hain-pan-once'
       : 'absolute inset-0';
+
+  const overlayWrapperClassName =
+    room.id === 'hain' && room.visual.overlayEffect === 'rays'
+      ? 'absolute pointer-events-none animate-hain-pan-once'
+      : 'absolute pointer-events-none';
 
   const renderExtraVisualLayers = () => {
     switch (room.id) {
@@ -269,7 +281,7 @@ export const SceneBackdrop: React.FC<SceneBackdropProps> = ({ room, className = 
 
       {/* Canvas-basierte Lebendigkeitseffekte */}
       {room.visual.overlayEffect && room.id !== 'ufer-nebel' && (
-        <div className="absolute pointer-events-none" style={overlayWrapperStyle}>
+        <div className={overlayWrapperClassName} style={overlayWrapperStyle}>
           <div className={`absolute inset-0 ${room.id === 'ufer-nebel' ? 'opacity-100' : ''}`} style={overlayCanvasStyle}>
             <CanvasOverlay effect={room.visual.overlayEffect} intensity={1} />
           </div>

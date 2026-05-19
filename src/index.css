@@ -310,10 +310,10 @@
 
 @keyframes hainPanOnce {
   0% {
-    transform: translate3d(5%, 0, 0);
+    transform: translate3d(8%, 0, 0) scale(1.02);
   }
   100% {
-    transform: translate3d(-5%, 0, 0);
+    transform: translate3d(-8%, 0, 0) scale(1.02);
   }
 }
 

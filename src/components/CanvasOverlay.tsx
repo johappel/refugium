@@ -312,20 +312,22 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
         rayColumnsRef.current = [];
 
         // Nur aufsteigende Funken vom Waldboden
-        for (let i = 0; i < 35 * intensity; i++) {
+        for (let i = 0; i < 54 * intensity; i++) {
           particles.push({
             kind: 'pollen',
             x: Math.random() * width,
             y: height + Math.random() * height * 0.3,
-            vx: (Math.random() - 0.5) * 0.16,
-            vy: -0.18 - Math.random() * 0.28,
-            size: 1.2 + Math.random() * 1.8,
-            opacity: 0.22 + Math.random() * 0.24,
+            vx: (Math.random() - 0.5) * 0.08,
+            vy: -0.26 - Math.random() * 0.36,
+            size: 1.3 + Math.random() * 2.1,
+            opacity: 0.28 + Math.random() * 0.28,
             life: 0,
             maxLife: 1,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.35 + Math.random() * 0.45,
-            glowIntensity: 0
+            speed: 0.45 + Math.random() * 0.55,
+            glowIntensity: 0.25 + Math.random() * 0.55,
+            wobbleFreq: 0.001 + Math.random() * 0.0018,
+            wobbleAmp: 0.05 + Math.random() * 0.08
           });
         }
       } else if (effect === 'waves') {
@@ -834,21 +836,18 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
     };
 
     const drawPollen = (p: Particle, time: number) => {
-      // Sanftes seitliches Schweben
-      const sway = Math.sin(time * 0.001 * p.speed + p.phase) * 0.24;
-      p.x += sway * 0.4;
-
       const pulse = 0.65 + Math.sin(time * 0.004 * p.speed + p.phase) * 0.35;
       const baseOp = p.opacity * pulse;
       const r = p.size * (0.9 + pulse * 0.35);
 
-      const haloGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 5);
-      haloGrad.addColorStop(0, `rgba(255, 226, 150, ${baseOp * 0.42})`);
-      haloGrad.addColorStop(0.42, `rgba(246, 197, 104, ${baseOp * 0.16})`);
+      const glowBoost = 1 + (p.glowIntensity ?? 0) * 0.45;
+      const haloGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * (5.4 + glowBoost * 0.35));
+      haloGrad.addColorStop(0, `rgba(255, 226, 150, ${baseOp * 0.5 * glowBoost})`);
+      haloGrad.addColorStop(0.42, `rgba(246, 197, 104, ${baseOp * 0.2 * glowBoost})`);
       haloGrad.addColorStop(1, 'rgba(255, 200, 100, 0)');
       ctx.fillStyle = haloGrad;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, r * 5, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, r * (5.4 + glowBoost * 0.35), 0, Math.PI * 2);
       ctx.fill();
 
       // Funken-Kern
@@ -1253,8 +1252,20 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         p.life++;
-        p.x += p.vx;
-        p.y += p.vy;
+        if (p.kind === 'pollen') {
+          const wobbleFreq = p.wobbleFreq ?? 0.0014;
+          const wobbleAmp = p.wobbleAmp ?? 0.08;
+          const targetDrift =
+            Math.sin(timestamp * wobbleFreq + p.phase) * wobbleAmp +
+            Math.cos(timestamp * wobbleFreq * 0.57 + p.phase * 1.3) * wobbleAmp * 0.55;
+
+          p.vx = p.vx * 0.92 + targetDrift * 0.08;
+          p.x += p.vx;
+          p.y += p.vy + Math.cos(timestamp * wobbleFreq * 0.8 + p.phase * 0.9) * wobbleAmp * 0.18;
+        } else {
+          p.x += p.vx;
+          p.y += p.vy;
+        }
 
         // Zeichnen
         switch (p.kind) {
@@ -1467,12 +1478,32 @@ export const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           }
           case 'pollen': {
             if (p.y < -20 || p.x < -30 || p.x > width + 30) {
+              const respawnInUpperHalf = Math.random() < 0.42;
               p.x = Math.random() * width;
-              p.y = height + 10 + Math.random() * height * 0.2;
-              p.vx = (Math.random() - 0.5) * 0.25;
-              p.vy = -0.12 - Math.random() * 0.22;
+              p.y = respawnInUpperHalf
+                ? height * (0.08 + Math.random() * 0.48)
+                : height + 10 + Math.random() * height * 0.2;
+              p.vx = (Math.random() - 0.5) * 0.08;
+              p.vy = respawnInUpperHalf
+                ? -0.14 - Math.random() * 0.18
+                : -0.2 - Math.random() * 0.32;
+              p.size = respawnInUpperHalf
+                ? 1.1 + Math.random() * 1.7
+                : 1.3 + Math.random() * 2.1;
+              p.opacity = respawnInUpperHalf
+                ? 0.22 + Math.random() * 0.22
+                : 0.28 + Math.random() * 0.28;
               p.phase = Math.random() * Math.PI * 2;
-              p.glowIntensity = 0;
+              p.speed = respawnInUpperHalf
+                ? 0.34 + Math.random() * 0.32
+                : 0.45 + Math.random() * 0.55;
+              p.glowIntensity = respawnInUpperHalf
+                ? 0.18 + Math.random() * 0.36
+                : 0.25 + Math.random() * 0.55;
+              p.wobbleFreq = 0.001 + Math.random() * 0.0018;
+              p.wobbleAmp = respawnInUpperHalf
+                ? 0.04 + Math.random() * 0.06
+                : 0.05 + Math.random() * 0.08;
             }
             break;
           }
