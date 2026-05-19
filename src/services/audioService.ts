@@ -624,6 +624,10 @@ class AudioService {
     this.masterGain.gain.linearRampToValueAtTime(muted ? 0 : 1.0, now + 0.6);
   }
 
+  public playUiSample(conf: SingleSoundConfig): void {
+    void this.playTransientSample(conf);
+  }
+
   // -- Room Playback --
 
   public playRoomAudio(config: AmbientAudioConfig, singleConfigs?: SingleSoundConfig[]): void {
@@ -1003,6 +1007,14 @@ class AudioService {
     void this.playConfiguredSample(conf);
   }
 
+  private async playTransientSample(conf: SingleSoundConfig): Promise<void> {
+    await this.init();
+
+    if (!this.ctx || !this.masterGain) return;
+
+    await this.playConfiguredSample(conf, false);
+  }
+
   private clearSingleSoundTimers(): void {
     this.singleSoundTimers.forEach((t) => clearTimeout(t));
     this.singleSoundTimers = [];
@@ -1040,12 +1052,14 @@ class AudioService {
     return loadingPromise;
   }
 
-  private async playConfiguredSample(conf: SingleSoundConfig): Promise<void> {
-    if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+  private async playConfiguredSample(conf: SingleSoundConfig, requireActivePlayback = true): Promise<void> {
+    if (!this.ctx || !this.masterGain) return;
+    if (requireActivePlayback && !this.isPlaying) return;
 
     const { sample } = conf;
     const buffer = await this.loadSoundEffectBuffer(sample.url);
-    if (!buffer || !this.ctx || !this.masterGain || !this.isPlaying) return;
+    if (!buffer || !this.ctx || !this.masterGain) return;
+    if (requireActivePlayback && !this.isPlaying) return;
 
     const now = this.ctx.currentTime;
     const source = this.ctx.createBufferSource();
