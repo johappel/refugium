@@ -162,7 +162,7 @@ export const INITIAL_ROOMS: Room[] = [
       background: 'linear-gradient(180deg, #2d3748 0%, #1a202c 55%, #0f172a 100%)',
       overlayEffect: 'mist'
     },
-    audio: { type: 'shoreline', volume: 0.24 },
+    audio: { type: 'shoreline', volume: 0.34 },
     clickAreas: [
       { id: 'ca-ufer-1', targetRoomId: 'wintergarten', x: 10, y: 30, width: 25, height: 40, label: 'Das Glashaus hinter dem Dunst' },
       { id: 'ca-ufer-2', targetRoomId: 'stiller-innenhof', x: 70, y: 40, width: 25, height: 35, label: 'Ein stiller Hof mit Brunnenlicht' },
@@ -318,9 +318,9 @@ export const INITIAL_ROOMS: Room[] = [
       }
     },
     clickAreas: [
-      { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 10, y: 45, width: 20, height: 45, label: 'Zurück über den lichten Nebelweg' },
+      { id: 'ca-strand-1', targetRoomId: 'ufer-nebel', x: 1, y: 35, width: 20, height: 45, label: 'Zurück über den lichten Nebelweg' },
       { id: 'ca-strand-2', targetRoomId: 'hain', x: 85, y: 65, width: 20, height: 40, label: 'Hinauf in den behüteten Hain' },
-      { id: 'ca-strand-3', targetRoomId: 'blaue-lagune', x: 40, y: 65, width: 20, height: 20, label: 'Ein geschützter Felspfad zur blauen Grotte' }
+      { id: 'ca-strand-3', targetRoomId: 'blaue-lagune', x: 20, y: 3, width: 20, height: 20, label: 'Ein geschützter Felspfad zur blauen Grotte' }
     ],
     transitionType: 'wasserreflexion',
     movementIntensity: 'moderat',
