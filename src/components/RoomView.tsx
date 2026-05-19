@@ -80,6 +80,14 @@ function getNavigationBeaconPalette(targetRoomId: string): NavigationBeaconPalet
   return NAVIGATION_BEACON_FALLBACKS[hash % NAVIGATION_BEACON_FALLBACKS.length];
 }
 
+function getNavigationBeaconDelay(areaId: string, targetRoomId: string, duration: number): number {
+  const hashSeed = `${areaId}:${targetRoomId}`;
+  const hash = Array.from(hashSeed).reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0);
+  const normalized = (hash % 997) / 997;
+
+  return -(duration * (0.14 + normalized * 0.78));
+}
+
 const SHARED_TEXT_PANEL_STYLE = {
   background:
     'radial-gradient(ellipse at center, rgba(7, 11, 16, 0.42) 0%, rgba(7, 11, 16, 0.28) 48%, rgba(7, 11, 16, 0.1) 72%, rgba(7, 11, 16, 0) 100%)',
@@ -149,13 +157,14 @@ const ROOM_MICRO_EVENTS: Record<string, string[]> = {
 
 interface RoomViewProps {
   room: Room;
+  visitedRoomIds: string[];
   onNavigate: (targetRoomId: string, area: ClickArea) => void;
   thoughtReplayTrigger: number;
 }
 
 type CenterTextKind = 'thought' | 'micro';
 
-export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtReplayTrigger }) => {
+export const RoomView: React.FC<RoomViewProps> = ({ room, visitedRoomIds, onNavigate, thoughtReplayTrigger }) => {
   const headerPanelStyle = room.id === 'ufer-nebel' ? SOFT_MIST_HEADER_PANEL_STYLE : SHARED_TEXT_PANEL_STYLE;
   const headerTitleShadow =
     room.id === 'ufer-nebel'
@@ -414,8 +423,9 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
       {/* Unsichtbare Click-Areas */}
       {room.clickAreas.map((area, index) => {
         const beaconPalette = getNavigationBeaconPalette(area.targetRoomId);
-        const beaconDuration = 7.8 + (index % 4) * 0.7;
-        const beaconDelay = -((index * 1.35) % 5.2);
+        const isVisitedTarget = visitedRoomIds.includes(area.targetRoomId);
+        const beaconDuration = 14.5 + (index % 4) * 1.2;
+        const beaconDelay = getNavigationBeaconDelay(area.id, area.targetRoomId, beaconDuration);
 
         return (
         <div
@@ -423,7 +433,7 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
           data-nav-area="true"
           onPointerDown={handleAreaPointerDown}
           onClick={() => handleAreaClick(area)}
-          className={`absolute z-20 cursor-pointer transition-all duration-700 ${
+          className={`absolute z-20 cursor-default transition-all duration-700 ${
             canNavigate ? 'pointer-events-auto' : 'pointer-events-none'
           }`}
           aria-label={area.label ?? `Navigation zu ${area.targetRoomId}`}
@@ -438,6 +448,18 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
           <span className="sr-only">{area.label ?? `Navigation zu ${area.targetRoomId}`}</span>
           <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <div
+              className="navigation-beacon-haze"
+              style={{
+                background: `radial-gradient(circle, ${beaconPalette.glow} 0%, ${beaconPalette.ring} 34%, transparent 74%)`,
+                boxShadow: `0 0 26px ${beaconPalette.glow}, 0 0 54px ${beaconPalette.glow}`,
+                width: isVisitedTarget ? '3rem' : undefined,
+                height: isVisitedTarget ? '3rem' : undefined,
+                opacity: isVisitedTarget ? 0.18 : undefined,
+                animationDuration: `${beaconDuration}s`,
+                animationDelay: `${beaconDelay}s`
+              }}
+            />
+            <div
               className="navigation-beacon-core"
               style={{
                 background: beaconPalette.core,
@@ -451,6 +473,10 @@ export const RoomView: React.FC<RoomViewProps> = ({ room, onNavigate, thoughtRep
               style={{
                 borderColor: beaconPalette.ring,
                 boxShadow: `0 0 18px ${beaconPalette.glow}, 0 0 42px ${beaconPalette.glow}`,
+                width: isVisitedTarget ? '2.35rem' : undefined,
+                height: isVisitedTarget ? '2.35rem' : undefined,
+                borderWidth: isVisitedTarget ? '1px' : undefined,
+                opacity: isVisitedTarget ? 0.72 : undefined,
                 animationDuration: `${beaconDuration}s`,
                 animationDelay: `${beaconDelay}s`
               }}

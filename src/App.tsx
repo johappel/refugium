@@ -35,6 +35,7 @@ export const App: React.FC = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [allRooms, setAllRooms] = useState<Room[]>(INITIAL_ROOMS);
   const [currentRoom, setCurrentRoom] = useState<Room>(INITIAL_ROOMS[0]);
+  const [visitedRoomIds, setVisitedRoomIds] = useState<string[]>([]);
   const [pendingRoom, setPendingRoom] = useState<Room | null>(null);
   const [activeTransition, setActiveTransition] = useState<{
     type: TransitionType;
@@ -122,6 +123,14 @@ export const App: React.FC = () => {
     setIsGiftPopoverOpen(false);
   }, [currentRoom.id]);
 
+  useEffect(() => {
+    if (!hasEntered) return;
+
+    setVisitedRoomIds((current) => (
+      current.includes(currentRoom.id) ? current : [...current, currentRoom.id]
+    ));
+  }, [currentRoom.id, hasEntered]);
+
   const handleEnterRefuge = async () => {
     await audioService.init();
     setHasEntered(true);
@@ -185,6 +194,7 @@ export const App: React.FC = () => {
       {hasEntered && (
         <RoomView
           room={currentRoom}
+          visitedRoomIds={visitedRoomIds}
           onNavigate={handleNavigate}
           thoughtReplayTrigger={thoughtReplayTrigger}
         />

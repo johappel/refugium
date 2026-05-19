@@ -188,34 +188,49 @@
 }
 
 @keyframes navigationBeaconGlow {
-  0%, 70%, 100% {
+  0%, 84%, 100% {
     transform: translate(-50%, -50%) scale(0.94);
-    opacity: 0.12;
+    opacity: 0.18;
     filter: blur(0.4px);
   }
-  8% {
-    transform: translate(-50%, -50%) scale(1.06);
-    opacity: 0.42;
+  4.5% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.62;
     filter: blur(0px);
   }
-  14% {
+  8.5% {
     transform: translate(-50%, -50%) scale(1);
-    opacity: 0.18;
+    opacity: 0.28;
     filter: blur(0.2px);
   }
 }
 
 @keyframes navigationBeaconRing {
-  0%, 68%, 100% {
+  0%, 84%, 100% {
     transform: translate(-50%, -50%) scale(0.45);
     opacity: 0;
   }
-  9% {
-    opacity: 0.34;
+  5% {
+    opacity: 0.46;
   }
-  22% {
-    transform: translate(-50%, -50%) scale(1.9);
+  11% {
+    transform: translate(-50%, -50%) scale(2.15);
     opacity: 0;
+  }
+}
+
+@keyframes navigationBeaconHaze {
+  0%, 84%, 100% {
+    transform: translate(-50%, -50%) scale(0.82);
+    opacity: 0.18;
+  }
+  4.5% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.58;
+  }
+  9.5% {
+    transform: translate(-50%, -50%) scale(0.98);
+    opacity: 0.28;
   }
 }
 
@@ -344,13 +359,28 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 9999px;
   transform: translate(-50%, -50%);
-  opacity: 0.16;
+  opacity: 0.99;
   mix-blend-mode: screen;
   animation: navigationBeaconGlow 8.2s ease-out infinite;
+  will-change: transform, opacity, filter;
+}
+
+.navigation-beacon-haze {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  opacity: 0.24;
+  mix-blend-mode: screen;
+  filter: blur(16px);
+  animation: navigationBeaconHaze 8.2s ease-out infinite;
   will-change: transform, opacity, filter;
 }
 
@@ -358,10 +388,10 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 3.2rem;
+  height: 3.2rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1.2px solid rgba(255, 255, 255, 0.1);
   transform: translate(-50%, -50%);
   opacity: 0;
   animation: navigationBeaconRing 8.2s cubic-bezier(0.19, 0.8, 0.28, 1) infinite;
