@@ -187,13 +187,29 @@ export const INITIAL_ROOMS: Room[] = [
       type: 'silence',
       volume: 0.34,
       sampleLayer: {
-        url: 'sound-effects/celtic-well.mp3',
-        volume: 0.72,
-        fadeInSeconds: 2.4,
+        url: 'sound-effects/rain.mp3',
+        volume: 0.52,
+        fadeInSeconds: 0,
         loop: true,
         lowpass: 2600
-      }
+      },
     },
+    singleSounds: [
+      {
+        name: 'Keltische Flöte',
+        type: 'sample',
+        startImmediately: true,
+        sample: {
+          url: 'sound-effects/celtic-well.mp3',
+          volume: 0.72,
+          lowpass: 2400,
+          fadeInSeconds: 3.5,
+          fadeOutSeconds: 4
+        },
+        intervalMin: 120,
+        intervalMax: 180
+      }
+    ],
     clickAreas: [
       { id: 'ca-hof-1', targetRoomId: 'bibliothek-nacht', x: 22, y: 14, width: 18, height: 24, label: 'Die warme Stube aus Holz und Papier' },
       { id: 'ca-hof-4', targetRoomId: 'leere-kirche', x: 85, y: 30, width: 20, height: 30, label: 'Die Kapelle voller fallendem Licht' },

@@ -43,6 +43,8 @@ export interface SingleSoundConfig {
     lowpass?: number;
     startOffset?: number;
     clipDuration?: number;
+    fadeInSeconds?: number;
+    fadeOutSeconds?: number;
     playbackRateMin?: number;
     playbackRateMax?: number;
   };

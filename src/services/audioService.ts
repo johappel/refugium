@@ -1070,6 +1070,15 @@ class AudioService {
     const startOffset = Math.min(sample.startOffset ?? 0, Math.max(0, buffer.duration - 0.12));
     const maxDuration = Math.max(0.12, buffer.duration - startOffset);
     const clipDuration = Math.min(sample.clipDuration ?? maxDuration, maxDuration);
+    const fadeInDuration = Math.min(
+      Math.max(0.02, sample.fadeInSeconds ?? 0.08),
+      Math.max(0.02, clipDuration - 0.08)
+    );
+    const fadeOutDuration = Math.min(
+      Math.max(0.02, sample.fadeOutSeconds ?? 0.35),
+      Math.max(0.02, clipDuration - 0.02)
+    );
+    const sustainUntil = now + Math.max(fadeInDuration, clipDuration - fadeOutDuration);
 
     source.buffer = buffer;
     source.playbackRate.setValueAtTime(
@@ -1082,8 +1091,8 @@ class AudioService {
     filter.Q.setValueAtTime(0.25, now);
 
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(sample.volume, now + 0.08);
-    gain.gain.setValueAtTime(sample.volume, now + Math.max(0.2, clipDuration - 0.35));
+    gain.gain.linearRampToValueAtTime(sample.volume, now + fadeInDuration);
+    gain.gain.setValueAtTime(sample.volume, sustainUntil);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + clipDuration);
 
     source.connect(filter);
